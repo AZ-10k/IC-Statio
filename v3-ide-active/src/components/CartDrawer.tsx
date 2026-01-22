@@ -129,7 +129,7 @@ const CartDrawer = () => {
           <span className="sr-only">{l.cart}</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side={isRTL ? "left" : "right"} className="w-full sm:max-w-md flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
+      <SheetContent side={isRTL ? "left" : "right"} className="w-full sm:max-w-md flex flex-col pt-10 z-[70]" dir={isRTL ? "rtl" : "ltr"}>
         <SheetHeader>
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2 text-primary">

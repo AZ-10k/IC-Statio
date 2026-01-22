@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Heart, X, Instagram, Tag, Plus, Settings, CheckSquare, Square, ShoppingBag, Trash2 } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatPriceWithConversion } from "@/utils/formatPrice";
+import { getProductById } from "@/data/products";
+import { Heart, X, Tag, ShoppingBag, Trash2 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,45 +23,34 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { getProductById } from "@/data/products";
-import { INSTAGRAM_PROFILE_URL } from "@/constants/socialLinks";
 import { toast } from "sonner";
 
 const WishlistDrawer = () => {
-  const {
-    wishlist,
-    categories,
-    removeFromWishlist,
-    moveToCategory,
-    addCategory,
-    clearWishlist
-  } = useWishlist();
+  const { wishlist, categories, removeFromWishlist } = useWishlist();
   const { t, isRTL, language } = useLanguage();
   const [searchParams] = useSearchParams();
-  const { formatPrice } = useCurrency();
+  const { currency, rates } = useCurrency();
   const { addToCart } = useCart();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [bulkMode, setBulkMode] = useState(false);
 
-  const wishlistProducts = wishlist
-    .map((item) => ({
-      ...getProductById(item.productId),
-      wishlistCategory: item.category,
-      dateAdded: item.dateAdded
-    }))
+  const wishlistProducts = (wishlist ?? []).map((item) => {
+      const product = getProductById(item.productId);
+      if (!product) {
+        console.error(`Product not found for ID: ${item.productId}`);
+        return null;
+      }
+      return {
+        ...product,
+        wishlistCategory: item.category,
+        dateAdded: item.dateAdded
+      };
+    })
     .filter(Boolean);
 
   // Bulk action handlers
@@ -122,15 +114,15 @@ const WishlistDrawer = () => {
           )}
         </button>
       </SheetTrigger>
-      <SheetContent side={isRTL ? "left" : "right"} className="w-full sm:max-w-md bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      <SheetContent side={isRTL ? "left" : "right"} className="w-full sm:max-w-md bg-background pt-10 z-[70]" dir={isRTL ? "rtl" : "ltr"}>
         <SheetHeader>
           <div className="flex items-center justify-between">
-            <SheetTitle className="font-serif text-primary flex items-center gap-2">
+            <SheetTitle className="font-serif text-primary flex items-center gap-2" dir={isRTL ? "rtl" : "ltr"}>
+              <Heart className="h-5 w-5" />
+              <span>{isRTL ? "قائمة الأمنيات" : "My Wishlist"}</span>
               <span className="text-muted-foreground font-normal">
                 ({wishlist.length})
               </span>
-              {isRTL ? "قائمة الأمنيات" : "My Wishlist"}
-              <Heart className="h-5 w-5" />
             </SheetTitle>
             {wishlistProducts.length > 0 && (
               <Button
@@ -219,42 +211,9 @@ const WishlistDrawer = () => {
           )}
         </SheetHeader>
 
-        {/* Category Tabs */}
-        {wishlistProducts.length > 0 && (
-          <div className="px-6 py-3 bg-muted/30 rounded-lg mx-6">
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => {
-                const categoryItems = wishlist.filter(item => item.category === category);
-                return (
-                  <Badge
-                    key={category}
-                    variant={categoryItems.length > 0 ? "default" : "outline"}
-                    className="text-xs"
-                  >
-                    {category} ({categoryItems.length})
-                  </Badge>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         <div className="mt-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
           {wishlistProducts.length === 0 ? (
             <div className="text-center py-12 px-6">
-              {/* Animated Empty Wishlist Illustration */}
-              <div className="relative mb-6">
-                <div className="absolute inset-0 bg-rose-500/5 rounded-full blur-3xl animate-pulse" />
-                <div className="relative">
-                  <Heart className="h-24 w-24 text-muted-foreground/30 mx-auto mb-2" />
-                  <div className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-2">
-                    <div className="animate-bounce">
-                      <span className="text-2xl">💝</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
               <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
                 {isRTL ? "قائمة الأمنيات فارغة" : language === "FR" ? "Votre liste de souhaits est vide" : "Your wishlist is empty"}
               </h3>
@@ -300,36 +259,8 @@ const WishlistDrawer = () => {
                       </h4>
                     </Link>
 
-                    {/* Category Badge and Selector */}
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-xs px-2 py-0.5">
-                        <Tag className="w-3 h-3 mr-1" />
-                        {product.wishlistCategory}
-                      </Badge>
-
-                      <Select
-                        value={product.wishlistCategory}
-                        onValueChange={(newCategory) => moveToCategory(product.id, newCategory)}
-                      >
-                        <SelectTrigger className="w-24 h-6 text-xs border-none bg-transparent p-0 hover:bg-muted">
-                          <Settings className="w-3 h-3" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category} className="text-xs">
-                              {category}
-                            </SelectItem>
-                          ))}
-                          <SelectItem value="new-category" className="text-xs text-primary">
-                            <Plus className="w-3 h-3 mr-1" />
-                            New Category
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
                     <p className="text-sm font-semibold text-foreground mt-1">
-                      {formatPrice(product.priceDZD)}
+                      {formatPriceWithConversion(product.priceDZD, currency, language, rates)}
                     </p>
                   </div>
 
@@ -350,7 +281,7 @@ const WishlistDrawer = () => {
                       <AlertDialogTrigger asChild>
                         <button
                           className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
-                          aria-label={t.wishlist.removeFromWishlist}
+                          aria-label={language === "AR" ? "حذف من قائمة الأمنيات" : language === "FR" ? "Supprimer de la liste de souhaits" : "Remove from wishlist"}
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -406,12 +337,12 @@ const WishlistDrawer = () => {
                   });
                   removeFromWishlist(product.id);
                 });
-                toast.success(t.wishlist?.movedToCart || "Items moved to cart!");
+                toast.success(language === "AR" ? "تم إضافة العنصر للسلة" : language === "FR" ? "Article ajouté au panier" : "Item added to cart");
               }}
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <ShoppingBag className={`h-4 w-4 ${isRTL ? "ml-2" : "mr-2"}`} />
-              {t.wishlist?.moveAllToCart || "Move All to Cart"}
+              {language === "AR" ? "نقل الكل للسلة" : language === "FR" ? "Déplacer tout vers le panier" : "Move All to Cart"}
             </Button>
           </div>
         )}

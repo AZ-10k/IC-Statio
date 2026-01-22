@@ -1,19 +1,51 @@
+import { useLanguage } from "@/contexts/LanguageContext";
 import PreferencesMenu from "./PreferencesMenu";
 import ThemeToggle from "./ThemeToggle";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Truck } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const TopBar = () => {
-  const { t, isRTL } = useLanguage();
+  const { language } = useLanguage();
+  const isRTL = language === "AR";
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className={`flex h-10 items-center justify-between px-4 lg:px-8 bg-blue-600 border-b border-border text-xs text-white font-bold ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
-      {/* Left side - Delivery text */}
-      <div className="flex items-center">
-        <span className="font-medium">🚚 Livraison gratuite partout en Algérie 🇩🇿</span>
+    <div
+      className={`sticky top-0 left-0 right-0 flex items-center h-10 px-4 lg:px-8 z-[60] ${isRTL ? "rtl" : "ltr"} relative transition-all duration-500 ${
+        isScrolled
+          ? "bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg shadow-primary/5"
+          : "bg-background/80 backdrop-blur-md border-b border-border/30"
+      }`}
+      dir={isRTL ? "rtl" : "ltr"}
+    >
+      {/* Center - Shipping info */}
+      <div className={`absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-xs text-muted-foreground font-medium ${isRTL ? "flex-row-reverse" : ""}`}>
+        {language === "AR" ? (
+          <>
+            {"نحن نشحن في جميع أنحاء الجزائر (58 ولاية)"}
+            <Truck className="h-3 w-3 scale-x-[-1]" />
+          </>
+        ) : (
+          <>
+            <Truck className="h-3 w-3" />
+            {language === "FR" 
+              ? "Livraison dans toute l'Algérie (58 Wilayas)"
+              : "We ship across all Algeria (58 Wilayas)"
+            }
+          </>
+        )}
       </div>
 
-      {/* Right side - Controls */}
-      <div className="flex items-center gap-2">
+      {/* Right side - Language and Theme controls */}
+      <div className="ml-auto flex items-center gap-4">
         <PreferencesMenu />
         <ThemeToggle />
       </div>

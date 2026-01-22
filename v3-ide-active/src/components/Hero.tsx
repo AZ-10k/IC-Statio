@@ -18,14 +18,6 @@ const Hero = () => {
 
   return (
     <section className={`relative min-h-screen bg-blush flex items-center pt-16 lg:pt-20 ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
-      {/* Shipping Banner */}
-      <div className="absolute top-16 lg:top-20 left-0 right-0 bg-primary text-primary-foreground py-2.5 z-10">
-        <div className="container mx-auto px-4 lg:px-8 flex items-center justify-center gap-2 text-sm">
-          <Truck className="h-4 w-4" />
-          <span>{t.hero.shippingBanner}</span>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 lg:px-8 pt-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Content */}
