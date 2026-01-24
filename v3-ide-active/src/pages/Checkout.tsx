@@ -92,8 +92,7 @@ const Checkout = () => {
     form.clearErrors();
     // Re-validate with new schema
     form.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language]);
+  }, [language, form]);
 
   // Wilaya combobox state
   const [isWilayaOpen, setIsWilayaOpen] = useState(false);
@@ -168,8 +167,7 @@ const Checkout = () => {
       form.setValue("commune", "");
       setCommuneSearch("");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedWilaya, selectedWilaya]);
+  }, [watchedWilaya, selectedWilaya, form]);
 
   const handleWilayaSelect = (code: string) => {
     setSelectedWilaya(code);
@@ -508,7 +506,7 @@ const Checkout = () => {
     if (!isValid) {
       // Show error toast if validation fails
       const errors = form.formState.errors;
-      console.log("Validation errors:", errors);
+      // Validation errors occurred, showing user feedback
       toast.error(language === "AR" ? "يرجى ملء جميع الحقول المطلوبة" : language === "FR" ? "Veuillez remplir tous les champs requis" : "Please fill in all required fields");
       return;
     }

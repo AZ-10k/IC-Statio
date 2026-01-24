@@ -11,9 +11,9 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { cn } from "@/lib/utils";
 
 const languages: { code: Language; name: string; flag: string }[] = [
-  { code: "AR", name: "العربية", flag: "https://flagcdn.com/w40/dz.png" },
-  { code: "EN", name: "English", flag: "https://flagcdn.com/w40/gb.png" },
-  { code: "FR", name: "Français", flag: "https://flagcdn.com/w40/fr.png" },
+  { code: "AR", name: "العربية", flag: "/assets/flags/dz.svg" },
+  { code: "EN", name: "English", flag: "/assets/flags/gb.svg" },
+  { code: "FR", name: "Français", flag: "/assets/flags/fr.svg" },
 ];
 
 const currencies: { code: "DZD" | "EUR" | "USD"; label: { EN: string; FR: string; AR: string } }[] = [

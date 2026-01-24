@@ -4,9 +4,9 @@ import { useLanguage, Language } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 const languageOptions: { code: Language; flag: string; name: string }[] = [
-  { code: "EN", flag: "https://flagcdn.com/w40/gb.png", name: "English" },
-  { code: "FR", flag: "https://flagcdn.com/w40/fr.png", name: "Français" },
-  { code: "AR", flag: "https://flagcdn.com/w40/sa.png", name: "العربية" },
+  { code: "EN", flag: "/assets/flags/gb.svg", name: "English" },
+  { code: "FR", flag: "/assets/flags/fr.svg", name: "Français" },
+  { code: "AR", flag: "/assets/flags/dz.svg", name: "العربية" },
 ];
 
 const LanguageDropdown = () => {

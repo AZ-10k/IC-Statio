@@ -164,10 +164,10 @@ const SizeGuide = ({ productType, dimensions, className = "" }: SizeGuideProps) 
                   <div
                     className="bg-muted/30 border-2 border-dashed border-muted-foreground/50 rounded-lg flex items-center justify-center text-muted-foreground text-sm"
                     style={{
-                      width: `${Math.min(productDimensions.width * 2, 120)}px`,
-                      height: `${Math.min(productDimensions.height * 2, 160)}px`,
-                      minWidth: '80px',
-                      minHeight: '100px'
+                      width: `${Math.min(productDimensions.width * 2, 12)}rem`,
+                      height: `${Math.min(productDimensions.height * 2, 16)}rem`,
+                      minWidth: '5rem',
+                      minHeight: '6.25rem'
                     }}
                   >
                     {productDimensions.width} × {productDimensions.height} cm

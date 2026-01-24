@@ -12,7 +12,6 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { UserContentProvider } from "@/contexts/UserContentContext";
 import { OrderProvider } from "@/contexts/OrderContext";
 import { useNotificationTriggers } from "@/hooks/useNotificationTriggers";
-import ScrollToTop from "@/components/ScrollToTop";
 import TopBar from "@/components/TopBar";
 import { Skeleton } from "@/components/ui/skeleton";
 import Index from "./pages/Index";
@@ -52,7 +51,6 @@ const AppContent = () => {
       <Toaster />
       <Sonner />
       <TopBar />
-      <ScrollToTop />
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<Index />} />

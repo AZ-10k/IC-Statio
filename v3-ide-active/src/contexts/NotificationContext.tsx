@@ -188,7 +188,14 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     if (cartItems.length === 0) return;
 
     // Only trigger if cart hasn't been modified for 24 hours
-    const lastCartActivity = localStorage.getItem("statio-last-cart-activity");
+    let lastCartActivity;
+    try {
+      lastCartActivity = localStorage.getItem("statio-last-cart-activity");
+    } catch (error) {
+      console.warn("Failed to access last cart activity from localStorage:", error);
+      return;
+    }
+    
     if (lastCartActivity) {
       const hoursSinceActivity = (Date.now() - new Date(lastCartActivity).getTime()) / (1000 * 60 * 60);
       if (hoursSinceActivity < 24) return;
@@ -206,7 +213,11 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Update last activity
-    localStorage.setItem("statio-last-cart-activity", new Date().toISOString());
+    try {
+      localStorage.setItem("statio-last-cart-activity", new Date().toISOString());
+    } catch (error) {
+      console.warn("Failed to update last cart activity in localStorage:", error);
+    }
   };
 
   return (

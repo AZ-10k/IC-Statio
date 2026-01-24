@@ -44,10 +44,10 @@ const TopBar = () => {
         )}
       </div>
 
-      {/* Right side - Language and Theme controls */}
-      <div className="ml-auto flex items-center gap-4">
-        <PreferencesMenu />
+      {/* Language and Theme controls - positioned based on language direction */}
+      <div className={`flex items-center gap-2 ${isRTL ? "mr-auto" : "ml-auto"}`}>
         <ThemeToggle />
+        <PreferencesMenu />
       </div>
     </div>
   );

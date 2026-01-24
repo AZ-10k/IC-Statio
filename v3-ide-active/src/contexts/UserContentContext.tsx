@@ -64,7 +64,6 @@ const SAMPLE_USER_PHOTOS: UserPhoto[] = [
     id: "4",
     productId: "gold-gel-pen",
     userName: "Mohamed T.",
-    userName: "Mohamed T.",
     userAvatar: "",
     imageUrl: "/api/placeholder/400/400",
     caption: "My favorite writing companion! ✍️",
@@ -121,7 +120,7 @@ export const UserContentProvider = ({ children }: { children: ReactNode }) => {
 
   const reportPhoto = (photoId: string) => {
     // In a real app, this would send a report to moderation
-    console.log(`Photo ${photoId} reported for moderation`);
+    // TODO: Implement photo reporting API call
   };
 
   // Get featured photos (highest likes, verified first)

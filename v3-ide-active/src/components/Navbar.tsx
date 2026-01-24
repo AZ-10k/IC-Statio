@@ -208,7 +208,7 @@ const Navbar = () => {
                         }`}
                       >
                         <img 
-                          src={lang === "AR" ? "https://flagcdn.com/w40/dz.png" : lang === "FR" ? "https://flagcdn.com/w40/fr.png" : "https://flagcdn.com/w40/gb.png"} 
+                          src={lang === "AR" ? "/assets/flags/dz.svg" : lang === "FR" ? "/assets/flags/fr.svg" : "/assets/flags/gb.svg"} 
                           alt={lang} 
                           className="w-5 h-4 object-cover rounded-sm" 
                         /> 

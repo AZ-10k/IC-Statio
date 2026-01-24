@@ -482,7 +482,7 @@ const Shop = () => {
                           bundle={bundle}
                           onViewDetails={() => {
                             // Navigate to bundle detail page (could be implemented later)
-                            console.log("View bundle details:", bundle.id);
+                            // TODO: Implement bundle detail navigation
                           }}
                         />
                       ))}

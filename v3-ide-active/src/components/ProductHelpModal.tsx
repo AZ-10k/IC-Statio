@@ -123,6 +123,7 @@ const ProductHelpModal = ({ product, children }: ProductHelpModalProps) => {
       "Accessories": {
         dimensions: product.id === "gold-gel-pen" ? { width: 1.2, height: 14, thickness: 0.8 } : { width: 5, height: 8, thickness: 2 },
         weight: product.id === "gold-gel-pen" ? 25 : 45,
+        pages: null,
         material: product.id === "gold-gel-pen" ? (language === "AR" ? "معدن مطلي بالذهب" : language === "FR" ? "Métal plaqué or" : "Gold-plated metal") : (language === "AR" ? "بلاستيك عالي الجودة" : language === "FR" ? "Plastique haute qualité" : "Premium plastic"),
         careTips: [
           language === "AR" ? "نظف بقطعة قماش ناعمة" : language === "FR" ? "Nettoyez avec un chiffon doux" : "Clean with a soft cloth",
@@ -152,7 +153,7 @@ const ProductHelpModal = ({ product, children }: ProductHelpModalProps) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-primary" />
