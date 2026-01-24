@@ -27,7 +27,11 @@ const TopBar = () => {
       dir={isRTL ? "rtl" : "ltr"}
     >
       {/* Center - Shipping info */}
-      <div className={`absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-xs text-muted-foreground font-medium ${isRTL ? "flex-row-reverse" : ""}`}>
+      <div className={`absolute flex items-center gap-2 text-xs text-muted-foreground font-medium ${isRTL ? "flex-row-reverse" : ""} ${
+        isRTL 
+          ? "md:left-1/2 md:-translate-x-1/2 right-4 left-auto" 
+          : "md:left-1/2 md:-translate-x-1/2 left-4 right-auto"
+      }`}>
         {language === "AR" ? (
           <>
             {"نحن نشحن في جميع أنحاء الجزائر (58 ولاية)"}

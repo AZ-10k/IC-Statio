@@ -7,9 +7,10 @@ headers = []
 [functions."*"]
 
 [build]
-publish = "D:\\Projects\\IC Statio\\icstatio\\dist"
+publish = "D:\\Website\\IC Statio\\v3-ide-active\\dist"
 publishOrigin = "config"
 commandOrigin = "config"
+base = "D:\\Website\\IC Statio\\v3-ide-active"
 command = "npm run build"
 
 [build.environment]
