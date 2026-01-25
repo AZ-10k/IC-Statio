@@ -13,6 +13,7 @@ import { UserContentProvider } from "@/contexts/UserContentContext";
 import { OrderProvider } from "@/contexts/OrderContext";
 import { useNotificationTriggers } from "@/hooks/useNotificationTriggers";
 import TopBar from "@/components/TopBar";
+import SkipToMainContent from "@/components/SkipToMainContent";
 import { Skeleton } from "@/components/ui/skeleton";
 import Index from "./pages/Index";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
@@ -48,6 +49,7 @@ const AppContent = () => {
 
   return (
     <>
+      <SkipToMainContent />
       <Toaster />
       <Sonner />
       <TopBar />

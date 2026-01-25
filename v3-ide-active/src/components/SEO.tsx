@@ -6,18 +6,37 @@ interface SEOProps {
   canonical?: string;
   image?: string;
   type?: "website" | "article" | "product";
+  language?: "EN" | "FR" | "AR";
 }
 
-const SEO = ({ title, description, canonical, image, type = "website" }: SEOProps) => {
+const SEO = ({ title, description, canonical, image, type = "website", language = "EN" }: SEOProps) => {
   const baseUrl = "https://icstatio.netlify.app";
   const defaultImage = `${baseUrl}/logo-statio.jpg`;
   const ogImage = image || defaultImage;
+  const currentPath = canonical || "/";
+  
+  // Locale mapping
+  const localeMap = {
+    EN: "en_US",
+    FR: "fr_FR",
+    AR: "ar_DZ"
+  };
+  
+  // Build canonical URL with language parameter
+  const canonicalUrl = canonical ? `${baseUrl}${canonical}?lang=${language.toLowerCase()}` : undefined;
+  const ogUrl = canonicalUrl || baseUrl;
   
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
-      {canonical && <link rel="canonical" href={`${baseUrl}${canonical}`} />}
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+      
+      {/* hreflang links for multilingual SEO */}
+      <link rel="alternate" hrefLang="en" href={`${baseUrl}${currentPath}?lang=en`} />
+      <link rel="alternate" hrefLang="fr" href={`${baseUrl}${currentPath}?lang=fr`} />
+      <link rel="alternate" hrefLang="ar" href={`${baseUrl}${currentPath}?lang=ar`} />
+      <link rel="alternate" hrefLang="x-default" href={`${baseUrl}${currentPath}?lang=en`} />
       
       {/* Open Graph */}
       <meta property="og:title" content={title} />
@@ -25,10 +44,12 @@ const SEO = ({ title, description, canonical, image, type = "website" }: SEOProp
       <meta property="og:type" content={type} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:site_name" content="Instant Créatif Statio" />
-      <meta property="og:locale" content="en_US" />
-      <meta property="og:locale:alternate" content="fr_FR" />
-      <meta property="og:locale:alternate" content="ar_DZ" />
-      {canonical && <meta property="og:url" content={`${baseUrl}${canonical}`} />}
+      <meta property="og:locale" content={localeMap[language]} />
+      {/* Only show alternates for OTHER languages */}
+      {language !== "EN" && <meta property="og:locale:alternate" content="en_US" />}
+      {language !== "FR" && <meta property="og:locale:alternate" content="fr_FR" />}
+      {language !== "AR" && <meta property="og:locale:alternate" content="ar_DZ" />}
+      {ogUrl && <meta property="og:url" content={ogUrl} />}
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

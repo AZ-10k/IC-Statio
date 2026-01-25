@@ -113,9 +113,9 @@ const ProductDetail = () => {
         <main className="pt-24 lg:pt-28 container mx-auto px-4 lg:px-8">
           <div className="text-center py-20">
             <h1 className="font-serif text-3xl text-primary mb-4">{t.productDetail.productNotFound}</h1>
-            <div onClick={() => navigateWithLanguage("/")} className="text-primary hover:underline cursor-pointer">
+            <button onClick={() => navigateWithLanguage("/")} className="text-primary hover:underline cursor-pointer bg-transparent border-none p-0">
               {t.productDetail.returnToCatalog}
-            </div>
+            </button>
           </div>
         </main>
         <Footer />
@@ -132,10 +132,10 @@ const ProductDetail = () => {
       <SEO 
         title={seoTitle}
         description={seoDescription}
-        productDescription={productDescription}
         canonical={`/product/${product.id}`}
         type="product"
         image={Array.isArray(product.images) ? product.images[0] : product.image}
+        language={language}
       />
       {product && <StructuredData type="Product" data={product} />}
       <Navbar />

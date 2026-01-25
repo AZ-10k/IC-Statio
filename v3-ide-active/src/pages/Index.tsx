@@ -34,10 +34,11 @@ const Index = () => {
         title={seoLabels.title}
         description={seoLabels.description}
         canonical="/"
+        language={language}
       />
       <StructuredData type="Organization" />
       <Navbar />
-      <main>
+      <main id="main-content">
         <Hero />
         <BestSellers />
         <RecentlyViewed />

@@ -8,19 +8,22 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import RTLProvider from "@/components/RTLProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <HelmetProvider>
         <BrowserRouter>
-          <ThemeProvider>
-            <LanguageProvider>
-              <CurrencyProvider>
-                <App />
-              </CurrencyProvider>
-            </LanguageProvider>
-          </ThemeProvider>
+          <RTLProvider>
+            <ThemeProvider>
+              <LanguageProvider>
+                <CurrencyProvider>
+                  <App />
+                </CurrencyProvider>
+              </LanguageProvider>
+            </ThemeProvider>
+          </RTLProvider>
         </BrowserRouter>
       </HelmetProvider>
     </ErrorBoundary>

@@ -62,7 +62,7 @@ const BestSellers = () => {
 
         {/* View All Button */}
         <div className="text-center mt-12 lg:mt-16">
-          <div onClick={() => navigateWithLanguage("/shop")}>
+          <button onClick={() => navigateWithLanguage("/shop")} className="w-full bg-transparent border-none p-0">
             <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg cursor-pointer">
               {t.products.viewAll}
               <svg
@@ -79,7 +79,7 @@ const BestSellers = () => {
                 />
               </svg>
             </Button>
-          </div>
+          </button>
         </div>
       </div>
     </section>

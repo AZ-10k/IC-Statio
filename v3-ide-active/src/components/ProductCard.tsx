@@ -241,6 +241,7 @@ const ProductCard = ({ id, name, priceDZD, image, category, badge, stock, stockS
                   }}
                   className="p-1 hover:bg-background rounded transition-colors"
                   disabled={quantity <= 1}
+                  aria-label={language === "AR" ? "إنقاص الكمية" : language === "FR" ? "Diminuer la quantité" : "Decrease quantity"}
                 >
                   <Minus className="h-4 w-4" />
                 </button>
@@ -251,6 +252,7 @@ const ProductCard = ({ id, name, priceDZD, image, category, badge, stock, stockS
                     setQuantity(quantity + 1);
                   }}
                   className="p-1 hover:bg-background rounded transition-colors"
+                  aria-label={language === "AR" ? "زيادة الكمية" : language === "FR" ? "Augmenter la quantité" : "Increase quantity"}
                 >
                   <Plus className="h-4 w-4" />
                 </button>

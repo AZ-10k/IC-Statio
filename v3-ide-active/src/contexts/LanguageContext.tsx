@@ -598,6 +598,9 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set("lang", lang.toLowerCase());
     setSearchParams(newSearchParams, { replace: true });
+
+    // Dispatch custom event for RTLProvider to listen to
+    window.dispatchEvent(new CustomEvent("languageUpdated", { detail: { language: lang } }));
   };
 
   const t = translations[language];

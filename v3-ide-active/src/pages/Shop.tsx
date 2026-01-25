@@ -336,6 +336,7 @@ const Shop = () => {
         title={seoLabels.title}
         description={seoLabels.description}
         canonical="/shop"
+        language={language}
       />
       <Navbar />
       <main className="pt-20 lg:pt-24">

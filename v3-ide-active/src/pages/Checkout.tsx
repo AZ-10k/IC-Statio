@@ -1051,7 +1051,7 @@ const Checkout = () => {
                       <h3 className="font-semibold text-foreground border-b border-border pb-2">{l.shippingInfo}</h3>
                     {/* Wilaya Combobox */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">{l.wilaya} *</label>
+                      <label htmlFor="wilaya-select" className="text-sm font-medium text-foreground">{l.wilaya} *</label>
                       <div className="relative wilaya-combo">
                         <div
                           className={cn(
@@ -1069,6 +1069,7 @@ const Checkout = () => {
                           <Search className="absolute ltr:left-3 rtl:right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           {isWilayaOpen ? (
                             <input
+                              id="wilaya-select"
                               ref={wilayaInputRef}
                               type="text"
                               value={wilayaSearch}
@@ -1114,7 +1115,7 @@ const Checkout = () => {
 
                     {/* Commune Combobox */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">{l.commune} *</label>
+                      <label htmlFor="commune-select" className="text-sm font-medium text-foreground">{l.commune} *</label>
                       <div className="relative commune-combo">
                         <div
                           className={cn(
@@ -1135,6 +1136,7 @@ const Checkout = () => {
                           <Search className="absolute ltr:left-3 rtl:right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           {isCommuneOpen ? (
                             <input
+                              id="commune-select"
                               ref={communeInputRef}
                               type="text"
                               value={communeSearch}
