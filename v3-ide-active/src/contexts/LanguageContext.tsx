@@ -119,6 +119,8 @@ interface Translations {
   wishlist: {
     addToWishlist: string;
     removeFromWishlist: string;
+    moveAllToCart: string;
+    movedToCart: string;
   };
   currency: string;
 }

@@ -20,7 +20,7 @@ interface BundleCardProps {
     badge?: string;
     rating?: number;
     reviewCount?: number;
-    bundleItems: {
+    bundleItems?: {
       productId: string;
       quantity: number;
     }[];
@@ -69,6 +69,7 @@ const BundleCard = ({ bundle, onViewDetails }: BundleCardProps) => {
 
   // Calculate original price (sum of individual items)
   const calculateOriginalPrice = () => {
+    if (!bundle.bundleItems) return 0;
     return bundle.bundleItems.reduce((total, item) => {
       const product = getProductById(item.productId);
       return total + (product ? product.priceDZD * item.quantity : 0);
@@ -83,19 +84,21 @@ const BundleCard = ({ bundle, onViewDetails }: BundleCardProps) => {
     setIsAddingToCart(true);
 
     // Add each item in the bundle to cart
-    bundle.bundleItems.forEach((item) => {
-      const product = getProductById(item.productId);
-      if (product) {
-        for (let i = 0; i < item.quantity; i++) {
-          addToCart({
-            id: product.id,
-            name: product.name,
-            price: product.priceDZD,
-            image: product.image
-          });
+    if (bundle.bundleItems) {
+      bundle.bundleItems.forEach((item) => {
+        const product = getProductById(item.productId);
+        if (product) {
+          for (let i = 0; i < item.quantity; i++) {
+            addToCart({
+              id: product.id,
+              name: product.name,
+              price: product.priceDZD,
+              image: product.image
+            });
+          }
         }
-      }
-    });
+      });
+    }
 
     setIsAddingToCart(false);
     setAddedToCart(true);
@@ -104,8 +107,10 @@ const BundleCard = ({ bundle, onViewDetails }: BundleCardProps) => {
   };
 
   const bundleProducts = bundle.bundleItems
-    .map(item => getProductById(item.productId))
-    .filter(Boolean);
+    ? bundle.bundleItems
+        .map(item => getProductById(item.productId))
+        .filter(Boolean)
+    : [];
 
   const labels = {
     EN: {

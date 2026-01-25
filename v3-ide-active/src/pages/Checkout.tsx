@@ -619,9 +619,7 @@ const Checkout = () => {
       shippingAddress: `${formValues.address?.trim() || ""}, ${language === "AR"
         ? availableCommunes.find(c => c.name === formValues.commune)?.ar_name || formValues.commune
         : formValues.commune}, ${wilayaName}, Algeria`,
-      paymentMethod: formValues.paymentMethod === "cod"
-        ? (language === "AR" ? "الدفع عند التسليم" : language === "FR" ? "Paiement à la livraison" : "Cash on Delivery")
-        : (language === "AR" ? "الدفع عبر الإنترنت" : language === "FR" ? "Paiement en ligne" : "Online Payment")
+      paymentMethod: (language === "AR" ? "الدفع عند التسليم" : language === "FR" ? "Paiement à la livraison" : "Cash on Delivery")
     });
 
     // Mark order as confirmed
