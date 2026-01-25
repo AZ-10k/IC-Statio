@@ -1,40 +1,8 @@
-redirectsOrigin = "config"
-plugins = []
-headers = []
-
-[functions]
-
-[functions."*"]
-
 [build]
-publish = "D:\\Website\\IC Statio\\v3-ide-active\\dist"
-publishOrigin = "config"
-commandOrigin = "config"
-base = "D:\\Website\\IC Statio\\v3-ide-active"
-command = "npm run build"
-
-[build.environment]
-
-[build.processing]
-
-[build.processing.css]
-
-[build.processing.html]
-
-[build.processing.images]
-
-[build.processing.js]
-
-[build.services]
+  publish = "dist"
+  command = "npm run build"
 
 [[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
-force = true
-
-[redirects.query]
-
-[redirects.conditions]
-
-[redirects.headers]
+  from = "/*"
+  to = "/index.html"
+  status = 200
