@@ -7,11 +7,25 @@
   NODE_ENV = "production"
   NPM_FLAGS = "--prefer-offline --no-audit"
 
-# SPA redirect
+# API/external service redirects (bypass SPA redirect)
+[[redirects]]
+  from = "/api/*"
+  to = "/api/:splat"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = false
+
+# SPA redirect - CRITICAL for React Router (must be LAST)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
 
 # Security headers
 [[headers]]
@@ -29,7 +43,7 @@
   [headers.values]
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://open.er-api.com https://formspree.io; frame-ancestors 'none';"
 
-# Static asset caching
+# Static asset caching - optimized for performance
 [[headers]]
   for = "/assets/*"
   [headers.values]
@@ -79,3 +93,11 @@
   for = "*.woff2"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML files - no caching for SPA
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
