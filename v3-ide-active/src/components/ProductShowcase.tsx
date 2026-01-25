@@ -191,7 +191,7 @@ const ProductShowcase = () => {
 
         {/* Product Grid with Animation */}
         <div 
-          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 transition-all duration-200 ${
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-200 ${
             isAnimating ? "opacity-0 transform scale-95" : "opacity-100 transform scale-100"
           }`}
         >

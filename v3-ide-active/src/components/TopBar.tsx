@@ -49,7 +49,7 @@ const TopBar = () => {
       </div>
 
       {/* Language and Theme controls - positioned based on language direction */}
-      <div className={`flex items-center gap-2 ${isRTL ? "mr-auto" : "ml-auto"}`}>
+      <div className={`flex items-center gap-2 ${isRTL ? "mr-auto" : "ml-auto"} min-h-[44px]`}>
         <ThemeToggle />
         <PreferencesMenu />
       </div>

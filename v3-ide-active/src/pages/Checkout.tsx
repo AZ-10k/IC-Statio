@@ -1284,7 +1284,7 @@ const Checkout = () => {
                             <FormControl>
                               <Textarea
                                 placeholder={l.orderNotesPlaceholder}
-                                className="ltr:pl-10 ltr:pr-3 rtl:pr-12 rtl:pl-3 py-3 min-h-[80px] resize-none"
+                                className="text-base ltr:pl-10 ltr:pr-3 rtl:pr-12 rtl:pl-3 py-3 min-h-[80px] resize-none"
                                 {...field}
                               />
                             </FormControl>

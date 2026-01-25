@@ -83,7 +83,7 @@ const RelatedProducts = ({ currentProduct }: RelatedProductsProps) => {
         <h2 className="font-serif text-2xl lg:text-3xl font-semibold text-primary mb-8 text-center">
           {labels[language]}
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
           {relatedProducts.map((product) => (
             <Link
               key={product.id}

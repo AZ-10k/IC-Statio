@@ -162,7 +162,7 @@ const Navbar = () => {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="lg:hidden text-wine hover:bg-wine/10 hover:scale-110 transition-all duration-300" 
+                className="lg:hidden text-wine hover:bg-wine/10 hover:scale-110 transition-all duration-300 min-w-[44px] min-h-[44px]" 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? <X className="h-5 w-5" strokeWidth={1.5} /> : <Menu className="h-5 w-5" strokeWidth={1.5} />}
