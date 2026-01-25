@@ -448,10 +448,9 @@ const Shop = () => {
             <div className="flex justify-end mb-6">
               <ExchangeRateIndicator />
             </div>
-          </div>
 
-          {/* Content and Sidebar Layout */}
-          <div className="flex gap-8">
+            {/* Content and Sidebar Layout */}
+            <div className="flex gap-8">
             {/* Advanced Filters Sidebar (Desktop) */}
             <div className="hidden lg:block w-80 shrink-0">
               <div className="sticky top-4">
@@ -602,6 +601,7 @@ const Shop = () => {
                 </div>
               )}
             </div>
+            </div>
           </div>
 
           {/* Mobile Advanced Filters Modal */}
@@ -627,30 +627,6 @@ const Shop = () => {
               </div>
             </div>
           )}
-
-        {/* Mobile Advanced Filters Modal */}
-        {showAdvancedFilters && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setShowAdvancedFilters(false)} />
-            <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-background p-4 overflow-y-auto">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">
-                  {language === "AR" ? "التصفية المتقدمة" : language === "FR" ? "Filtres Avancés" : "Advanced Filters"}
-                </h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowAdvancedFilters(false)}>
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-              <AdvancedFilters
-                currentFilters={advancedFilters}
-                onFiltersChange={(filters) => {
-                  setAdvancedFilters(filters);
-                  setShowAdvancedFilters(false);
-                }}
-              />
-            </div>
-          </div>
-        )}
     </section>
       </main>
       <Footer />
