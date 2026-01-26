@@ -88,7 +88,7 @@ const Footer = () => {
   return (
     <footer id="footer" className={`bg-primary text-primary-foreground ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
       {/* Main Footer */}
-      <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
+      <div className="w-full px-4 py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">

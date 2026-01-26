@@ -98,7 +98,7 @@ const PersonalizedRecommendations = ({
             </div>
           </div>
           <Link
-            to="/shop"
+            to={`/shop?lang=${language.toLowerCase()}`}
             className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
           >
             {l.viewAll} →
@@ -109,7 +109,7 @@ const PersonalizedRecommendations = ({
           {recommendations.map((product) => (
             <Link
               key={product.id}
-              to={`/product/${product.id}`}
+              to={`/product/${product.id}?lang=${language.toLowerCase()}`}
               className="group bg-background border border-border rounded-lg p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
             >
               <div className="relative mb-3">

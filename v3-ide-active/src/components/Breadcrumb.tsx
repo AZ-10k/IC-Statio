@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BreadcrumbItem {
   label: string;
@@ -14,12 +14,15 @@ interface BreadcrumbProps {
 }
 
 const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
-  const { isRTL } = useLanguage();
+  const { language, isRTL } = useLanguage();
+  const [searchParams] = useSearchParams();
+
+  if (!items || items.length === 0) return null;
 
   return (
     <nav aria-label="Breadcrumb" className={cn("flex items-center gap-2 text-sm", className)}>
       <Link 
-        to="/" 
+        to={`/?lang=${(searchParams.get("lang") || language).toLowerCase()}`} 
         className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
         aria-label="Home"
       >
@@ -38,7 +41,7 @@ const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
             
             {item.href && !isLast ? (
               <Link 
-                to={item.href}
+                to={`${item.href}?lang=${(searchParams.get("lang") || language).toLowerCase()}`}
                 className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[200px]"
               >
                 {item.label}

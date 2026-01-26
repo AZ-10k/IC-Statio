@@ -241,7 +241,7 @@ const WishlistDrawer = () => {
                     </div>
                   )}
                   <Link
-                    to={`/product/${product.id}`}
+                    to={`/product/${product.id}?lang=${(searchParams.get("lang") || language).toLowerCase()}`}
                     className="w-20 h-20 rounded-md overflow-hidden flex-shrink-0"
                   >
                     <img

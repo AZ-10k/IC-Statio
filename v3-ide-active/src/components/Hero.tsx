@@ -1,24 +1,26 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Truck } from "lucide-react";
 import heroImage from "@/assets/hero-stationery.jpg";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Hero = () => {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleShopClick = () => {
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleLearnMoreClick = () => {
-    navigate("/about");
+    const currentLang = (searchParams.get("lang") || language).toLowerCase();
+    navigate(`/about?lang=${currentLang}`);
   };
 
   return (
     <section className={`relative min-h-screen bg-blush flex items-center pt-16 lg:pt-20 ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
-      <div className="container mx-auto px-4 lg:px-8 pt-12">
+      <div className="w-full px-4 pt-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Content */}
           <div className={`text-center lg:text-${isRTL ? "right" : "left"} space-y-6 lg:space-y-8 animate-fade-in`}>

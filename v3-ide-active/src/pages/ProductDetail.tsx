@@ -110,7 +110,7 @@ const ProductDetail = () => {
     return (
       <div className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
         <Navbar />
-        <main className="pt-24 lg:pt-28 container mx-auto px-4 lg:px-8">
+        <main className="pt-24 lg:pt-28 w-full px-4">
           <div className="text-center py-20">
             <h1 className="font-serif text-3xl text-primary mb-4">{t.productDetail.productNotFound}</h1>
             <button onClick={() => navigateWithLanguage("/")} className="text-primary hover:underline cursor-pointer bg-transparent border-none p-0">
@@ -140,7 +140,7 @@ const ProductDetail = () => {
       {product && <StructuredData type="Product" data={product} />}
       <Navbar />
       <main className="pt-24 lg:pt-28">
-        <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12">
+        <div className="w-full px-4 py-8 lg:py-12">
           {/* Breadcrumb Navigation */}
           <Breadcrumb 
             items={[
@@ -360,7 +360,7 @@ const ProductDetail = () => {
         </div>
 
         {/* Product Reviews Section */}
-        <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12 border-t border-border">
+        <div className="w-full px-4 py-8 lg:py-12 border-t border-border">
           <ProductReviews productId={product.id} />
         </div>
 
@@ -377,7 +377,7 @@ const ProductDetail = () => {
         <div className={`fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border shadow-2xl transition-all duration-300 ${
           showStickyButton ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}>
-          <div className="container mx-auto px-4 lg:px-8 py-4">
+          <div className="w-full px-4 py-4">
             <div className="flex items-center justify-between gap-4 max-w-6xl mx-auto">
               {/* Product Info */}
               <div className="flex items-center gap-4 flex-1 min-w-0">

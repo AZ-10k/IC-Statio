@@ -45,25 +45,25 @@ const Navbar = () => {
   };
 
   const handleHomeClick = () => {
-    // Always navigate to home with current language parameter
     navigateWithLanguage("/");
-    setIsMenuOpen(false);
   };
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // Only handle special cases for section scrolling
+  const handleNavClick = (href: string) => {
     if (href.startsWith("/#")) {
-      e.preventDefault();
+      // Scroll to section on home page
       const sectionId = href.substring(2);
+      const currentLang = (searchParams.get("lang") || language).toLowerCase();
       // If we're not on the home page, navigate there first
       if (location.pathname !== "/") {
-        navigate("/");
+        navigate(`/?lang=${currentLang}`);
         setTimeout(() => {
           document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
         }, 100);
       } else {
         document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
       }
+    } else {
+      navigateWithLanguage(href);
     }
     setIsMenuOpen(false);
   };
@@ -77,7 +77,7 @@ const Navbar = () => {
 
   return (
     <nav 
-      className={`fixed top-10 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-10 left-0 right-0 w-full z-50 transition-all duration-500 ${
         isScrolled 
           ? "bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg shadow-primary/5" 
           : "bg-background/80 backdrop-blur-md border-b border-border/30"
@@ -87,7 +87,7 @@ const Navbar = () => {
       {/* Animated gradient border */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-wine/50 to-transparent animate-pulse" />
       
-      <div className="container mx-auto px-4 lg:px-8">
+      <div className="w-full px-4">
         <div className={`flex items-center h-16 lg:h-20 ${language === "AR" ? "flex-row" : ""} justify-between`}>
           {/* Logo with enhanced styling */}
           <button onClick={handleHomeClick} className="flex items-center gap-3 cursor-pointer group bg-transparent border-none p-0" aria-label={language === "AR" ? "العودة إلى الصفحة الرئيسية" : language === "FR" ? "Retour à l'accueil" : "Go to homepage"}>

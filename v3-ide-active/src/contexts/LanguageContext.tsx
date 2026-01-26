@@ -515,72 +515,55 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [language, setLanguageState] = useState<Language>(() => {
-    // Initialize with default, will be updated by useEffect
+    // Try to get initial language from URL or localStorage
+    const urlLang = new URLSearchParams(window.location.search).get("lang");
+    if (urlLang && (urlLang.toUpperCase() === "EN" || urlLang.toUpperCase() === "FR" || urlLang.toUpperCase() === "AR")) {
+      return urlLang.toUpperCase() as Language;
+    }
+    
+    try {
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      if (saved && (saved === "EN" || saved === "FR" || saved === "AR")) {
+        return saved as Language;
+      }
+    } catch (error) {
+      // Ignore localStorage errors
+    }
+    
     return "EN";
   });
 
-  // Initialize language from URL, localStorage, or browser detection
+  // Sync language state with URL parameter on every route change
   useEffect(() => {
     const urlLang = searchParams.get("lang");
 
-    // 1. Check URL parameter first (highest priority)
+    // If URL has a valid language parameter, use it
     if (urlLang && (urlLang.toUpperCase() === "EN" || urlLang.toUpperCase() === "FR" || urlLang.toUpperCase() === "AR")) {
-      setLanguageState(urlLang.toUpperCase() as Language);
+      const normalizedLang = urlLang.toUpperCase() as Language;
+      if (language !== normalizedLang) {
+        setLanguageState(normalizedLang);
+      }
       return;
     }
 
-    // 2. Check localStorage (user's previous choice)
-    if (typeof window !== "undefined") {
+    // If URL doesn't have lang parameter, add it from current state or localStorage
+    const currentLang = language || (() => {
       try {
         const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
         if (saved && (saved === "EN" || saved === "FR" || saved === "AR")) {
-          setLanguageState(saved as Language);
-          // Ensure URL reflects the language
-          if (!searchParams.get("lang")) {
-            const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.set("lang", saved.toLowerCase());
-            setSearchParams(newSearchParams, { replace: true });
-          }
-          return;
+          return saved as Language;
         }
       } catch (error) {
-        if (import.meta.env.DEV) {
-          console.error("Failed to load language from localStorage:", error);
-        }
+        // Ignore
       }
+      return "EN" as Language;
+    })();
 
-      // 3. Check browser language for geo-redirection
-      const browserLang = navigator.language?.toLowerCase() || "";
-      if (browserLang.startsWith("ar")) {
-        setLanguageState("AR");
-        // Ensure URL reflects the language
-        if (!searchParams.get("lang")) {
-          const newSearchParams = new URLSearchParams(searchParams);
-          newSearchParams.set("lang", "ar");
-          setSearchParams(newSearchParams, { replace: true });
-        }
-        return;
-      } else if (browserLang.startsWith("fr")) {
-        setLanguageState("FR");
-        // Ensure URL reflects the language
-        if (!searchParams.get("lang")) {
-          const newSearchParams = new URLSearchParams(searchParams);
-          newSearchParams.set("lang", "fr");
-          setSearchParams(newSearchParams, { replace: true });
-        }
-        return;
-      }
-    }
-
-    // Default fallback to English
-    setLanguageState("EN");
-    // Ensure URL reflects the default language
-    if (!searchParams.get("lang")) {
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.set("lang", "en");
-      setSearchParams(newSearchParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
+    // Add language to URL if missing
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set("lang", currentLang.toLowerCase());
+    setSearchParams(newSearchParams, { replace: true });
+  }, [searchParams, setSearchParams, language]);
 
   // Persist to localStorage when language changes
   useEffect(() => {

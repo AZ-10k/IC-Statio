@@ -278,7 +278,7 @@ const SearchBar = () => {
                     {filteredProducts.slice(0, 6).map((product) => (
                       <Link
                         key={product.id}
-                        to={`/product/${product.id}`}
+                        to={`/product/${product.id}?lang=${language.toLowerCase()}`}
                         onClick={() => {
                           handleClose();
                           handleSearchSubmit(query);
@@ -316,7 +316,7 @@ const SearchBar = () => {
                     {filteredProducts.length > 6 && (
                       <div className="px-4 py-2 border-t border-border">
                         <Link
-                          to={`/shop?search=${encodeURIComponent(query)}${selectedCategories.length > 0 ? `&categories=${selectedCategories.join(',')}` : ''}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}${selectedRating ? `&rating=${selectedRating}` : ''}`}
+                          to={`/shop?lang=${language.toLowerCase()}&search=${encodeURIComponent(query)}${selectedCategories.length > 0 ? `&categories=${selectedCategories.join(',')}` : ''}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}${selectedRating ? `&rating=${selectedRating}` : ''}`}
                           onClick={handleClose}
                           className="text-sm text-primary hover:text-primary/80"
                         >

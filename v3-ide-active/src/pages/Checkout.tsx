@@ -664,7 +664,7 @@ const Checkout = () => {
     <div className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
       <Navbar />
       <main className="pt-24 lg:pt-28">
-        <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12">
+        <div className="w-full px-4 py-8 lg:py-12">
           <Link to={`/shop?lang=${(searchParams.get("lang") || language).toLowerCase()}`} className="inline-flex items-center text-primary hover:text-primary/80 mb-8 transition-colors">
             <ArrowLeft className={`h-4 w-4 ${isRTL ? "ml-2 rotate-180" : "mr-2"}`} />
             {l.backToShop}
@@ -817,7 +817,7 @@ const Checkout = () => {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild variant="outline" className="flex-1">
-                    <Link to="/shop">
+                    <Link to={`/shop?lang=${(searchParams.get("lang") || language).toLowerCase()}`}>
                       <ShoppingBag className={`h-4 w-4 ${isRTL ? "ml-2" : "mr-2"}`} />
                       {l.continueShopping}
                     </Link>
@@ -836,7 +836,7 @@ const Checkout = () => {
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <ShoppingBag className="h-20 w-20 text-muted-foreground mb-6" />
               <p className="text-xl text-muted-foreground mb-6">{l.empty}</p>
-              <Link to="/shop">
+              <Link to={`/shop?lang=${(searchParams.get("lang") || language).toLowerCase()}`}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                   {l.startShopping}
                 </Button>

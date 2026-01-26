@@ -26,7 +26,7 @@ const BestSellers = () => {
 
   return (
     <section id="products" className={`py-20 lg:py-28 bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
-      <div className="container mx-auto px-4 lg:px-8">
+      <div className="w-full px-4">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16">
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold text-primary mb-4">

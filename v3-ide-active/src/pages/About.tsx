@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -23,6 +23,7 @@ const getSEOLabels = (language: "EN" | "FR" | "AR") => ({
 
 const About = () => {
   const { language, isRTL } = useLanguage();
+  const [searchParams] = useSearchParams();
   const seoLabels = getSEOLabels(language);
 
   const content = {
@@ -75,8 +76,8 @@ const About = () => {
       />
       <Navbar />
       <main className="pt-24 lg:pt-28">
-        <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12">
-          <Link to="/" className="inline-flex items-center text-primary hover:text-primary/80 mb-8 transition-colors">
+        <div className="w-full px-4 py-8 lg:py-12">
+          <Link to={`/?lang=${(searchParams.get("lang") || language).toLowerCase()}`} className="inline-flex items-center text-primary hover:text-primary/80 mb-8 transition-colors">
             <ArrowLeft className={`h-4 w-4 ${isRTL ? "ml-2 rotate-180" : "mr-2"}`} />
             {t.backToHome}
           </Link>

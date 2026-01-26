@@ -19,14 +19,14 @@ const TopBar = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 flex items-center h-10 z-[60] ${isRTL ? "rtl" : "ltr"} transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 w-full h-10 z-[60] transition-all duration-500 ${
         isScrolled
           ? "bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg shadow-primary/5"
           : "bg-background/80 backdrop-blur-md border-b border-border/30"
       }`}
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <div className="container mx-auto px-4 lg:px-8 flex items-center justify-between">
+      <div className="w-full px-4 flex items-center justify-between h-full">
         {/* Shipping info - positioned based on language direction */}
         <div className={`flex items-center gap-2 text-xs text-muted-foreground font-medium ${isRTL ? "flex-row-reverse" : ""}`}>
           {language === "AR" ? (

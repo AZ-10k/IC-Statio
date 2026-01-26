@@ -230,7 +230,7 @@ const FAQ = () => {
     <div className={`min-h-screen flex flex-col ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
       <Navbar />
       <main className="flex-grow py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-8">
+        <div className="w-full px-4">
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
@@ -302,7 +302,7 @@ const FAQ = () => {
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 {contactDescription[language]}
               </p>
-              <Link to="/contact" onClick={() => window.scrollTo(0, 0)}>
+              <Link to={`/contact?lang=${language.toLowerCase()}`} onClick={() => window.scrollTo(0, 0)}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                   {contactUsText[language]}
                 </Button>
