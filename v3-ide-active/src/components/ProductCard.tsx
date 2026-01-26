@@ -80,7 +80,7 @@ const ProductCard = ({ id, name, priceDZD, image, category, badge, stock, stockS
 
   return (
     <>
-      <div className="group relative bg-card rounded-lg overflow-hidden shadow-card hover:shadow-hover transition-all duration-300">
+      <div className="product-card-content group relative bg-card rounded-lg overflow-hidden shadow-card hover:shadow-hover transition-all duration-300">
         <div className="relative aspect-square overflow-hidden bg-muted">
           {!imageLoaded && (
             <Skeleton className="absolute inset-0 w-full h-full" />

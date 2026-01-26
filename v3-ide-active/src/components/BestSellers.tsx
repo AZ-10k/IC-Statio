@@ -42,8 +42,12 @@ const BestSellers = () => {
           {bestSellers.map((product, index) => (
             <div
               key={product.id}
-              onClick={() => navigateWithLanguage(`/product/${product.id}`)}
-              className="block cursor-pointer"
+              onClick={(e) => {
+                if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.product-card-content')) {
+                  navigateWithLanguage(`/product/${product.id}`);
+                }
+              }}
+              className="block cursor-pointer product-card-wrapper"
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <ProductCard

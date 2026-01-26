@@ -551,8 +551,13 @@ const Shop = () => {
                     .map((product, index) => (
                     <div
                       key={product.id}
-                      onClick={() => window.location.href = `/product/${product.id}`}
-                      className="block cursor-pointer"
+                      onClick={(e) => {
+                        if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.product-card-content')) {
+                          const currentLang = (searchParams.get("lang") || language).toLowerCase();
+                          window.location.href = `/product/${product.id}?lang=${currentLang}`;
+                        }
+                      }}
+                      className="block cursor-pointer product-card-wrapper"
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                         <ProductCard

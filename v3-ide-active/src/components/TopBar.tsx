@@ -45,8 +45,13 @@ const TopBar = () => {
           )}
         </div>
 
-        {/* Language and Theme controls */}
-        <div className={`flex items-center gap-2 min-h-[44px]`}>
+        {/* Mobile: Theme Toggle only */}
+        <div className="flex md:hidden items-center gap-2 min-h-[44px]">
+          <ThemeToggle />
+        </div>
+
+        {/* Desktop: Language and Theme controls */}
+        <div className={`hidden md:flex items-center gap-2 min-h-[44px]`}>
           <ThemeToggle />
           <PreferencesMenu />
         </div>

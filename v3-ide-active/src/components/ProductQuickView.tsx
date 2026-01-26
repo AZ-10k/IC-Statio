@@ -42,6 +42,19 @@ const ProductQuickView = ({ product, open, onOpenChange }: ProductQuickViewProps
 
   const t = labels[language];
 
+  // Get translated product info (name stays in English)
+  const getProductCategory = () => {
+    if (language === "AR" && product.categoryAR) return product.categoryAR;
+    if (language === "FR" && product.categoryFR) return product.categoryFR;
+    return product.category;
+  };
+
+  const getProductDescription = () => {
+    if (language === "AR" && product.descriptionAR) return product.descriptionAR;
+    if (language === "FR" && product.descriptionFR) return product.descriptionFR;
+    return product.description;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden" dir={isRTL ? "rtl" : "ltr"}>
@@ -58,12 +71,12 @@ const ProductQuickView = ({ product, open, onOpenChange }: ProductQuickViewProps
           </div>
 
           {/* Right - Content */}
-          <div className="p-6 flex flex-col">
-            <DialogHeader className="text-left mb-4">
+          <div className={`p-6 flex flex-col ${isRTL ? "text-right" : "text-left"}`}>
+            <DialogHeader className="mb-4">
               <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-                {product.category}
+                {getProductCategory()}
               </p>
-              <DialogTitle className="font-serif text-2xl font-semibold text-primary">
+              <DialogTitle className={`font-serif text-2xl font-semibold text-primary ${isRTL ? "text-right" : "text-left"}`}>
                 {product.name}
               </DialogTitle>
             </DialogHeader>
@@ -73,7 +86,7 @@ const ProductQuickView = ({ product, open, onOpenChange }: ProductQuickViewProps
             </p>
 
             <p className="text-foreground/80 text-sm leading-relaxed flex-1 mb-6">
-              {product.description}
+              {getProductDescription()}
             </p>
 
             <Button

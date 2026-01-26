@@ -239,18 +239,6 @@ const Navbar = () => {
                     ))}
                   </div>
                 </div>
-
-                {/* Mobile: Preferences and Theme Toggle */}
-                <div className="py-4 border-t border-border/50">
-                  <div className="flex items-center justify-between">
-                    <div className="p-2 rounded-xl bg-gradient-to-br from-border/20 to-blush/5">
-                      <PreferencesMenu />
-                    </div>
-                    <div className="p-2 rounded-xl bg-gradient-to-br from-border/20 to-blush/5">
-                      <ThemeToggle />
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

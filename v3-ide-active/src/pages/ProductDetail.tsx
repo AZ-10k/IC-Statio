@@ -419,54 +419,56 @@ const ProductDetail = () => {
 
       {/* Image Zoom Dialog */}
       <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
-        <DialogContent className="max-w-7xl w-full h-[90vh] p-0 bg-black/95 border-0">
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Close Button */}
-            <button
-              onClick={() => setIsZoomOpen(false)}
-              className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
-              aria-label="Close"
-            >
-              <X className="h-6 w-6 text-white" />
-            </button>
+        <DialogContent className="!fixed !inset-0 !max-w-none !w-screen !h-screen !p-0 !bg-black !border-0 !translate-x-0 !translate-y-0 !left-0 !top-0">
+          {/* Close Button */}
+          <button
+            onClick={() => setIsZoomOpen(false)}
+            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-6 w-6 text-white" />
+          </button>
 
-            {/* Navigation Buttons */}
-            {product.images.length > 1 && (
-              <>
-                <button
-                  onClick={handlePrevImage}
-                  className={`absolute ${isRTL ? "right-4" : "left-4"} top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors`}
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft className={`h-8 w-8 text-white ${isRTL ? "rotate-180" : ""}`} />
-                </button>
-                <button
-                  onClick={handleNextImage}
-                  className={`absolute ${isRTL ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors`}
-                  aria-label="Next image"
-                >
-                  <ChevronRight className={`h-8 w-8 text-white ${isRTL ? "rotate-180" : ""}`} />
-                </button>
-              </>
-            )}
+          {/* Navigation Buttons */}
+          {product.images.length > 1 && (
+            <>
+              <button
+                onClick={handlePrevImage}
+                className={`absolute ${isRTL ? "right-4" : "left-4"} top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors`}
+                aria-label="Previous image"
+              >
+                <ChevronLeft className={`h-8 w-8 text-white ${isRTL ? "rotate-180" : ""}`} />
+              </button>
+              <button
+                onClick={handleNextImage}
+                className={`absolute ${isRTL ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors`}
+                aria-label="Next image"
+              >
+                <ChevronRight className={`h-8 w-8 text-white ${isRTL ? "rotate-180" : ""}`} />
+              </button>
+            </>
+          )}
 
-            {/* Zoomed Image */}
+          {/* Zoomed Image - Centered */}
+          <div className="absolute inset-0 flex items-center justify-center p-4">
             <img
               src={product.images[selectedImage]}
               alt={product.name}
               className="max-w-full max-h-full object-contain"
             />
+          </div>
 
-            {/* Image Counter */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm">
-              <span className="text-white text-sm font-medium">
-                {selectedImage + 1} / {product.images.length}
-              </span>
-            </div>
+          {/* Image Counter */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm z-50">
+            <span className="text-white text-sm font-medium">
+              {selectedImage + 1} / {product.images.length}
+            </span>
+          </div>
 
-            {/* Thumbnail Strip */}
-            {product.images.length > 1 && (
-              <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 max-w-full overflow-x-auto px-4 py-2">
+          {/* Thumbnail Strip */}
+          {product.images.length > 1 && (
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-50">
+              <div className="flex gap-2 justify-center items-center flex-wrap">
                 {product.images.map((image, index) => (
                   <button
                     key={index}
@@ -485,8 +487,8 @@ const ProductDetail = () => {
                   </button>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
