@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, ZoomIn, X, ChevronLeft, ChevronRight, GitCompare, Plus, Minus } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
+import { ArrowLeft, ShoppingCart, ZoomIn, X, ChevronLeft, ChevronRight, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingButtons from "@/components/FloatingButtons";
 import WishlistButton from "@/components/WishlistButton";
@@ -15,480 +14,141 @@ import Breadcrumb from "@/components/Breadcrumb";
 import ProductHelpModal from "@/components/ProductHelpModal";
 import SizeGuide from "@/components/SizeGuide";
 import SEO from "@/components/SEO";
-import StructuredData from "@/components/StructuredData";
 import { getProductById } from "@/data/products";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
-import { useComparison } from "@/contexts/ComparisonContext";
 import { toast } from "sonner";
 
 const ProductDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const product = getProductById(id || "");
+  const { id: paramsId } = useParams<{ id: string }>();
+  const location = useLocation();
+  const lastProcessedId = useRef<string | null>(null);
+  
+  const activeId = useMemo(() => {
+    if (paramsId) return paramsId;
+    const pathParts = window.location.pathname.split('/');
+    return pathParts[pathParts.length - 1];
+  }, [paramsId, location.pathname]);
+
   const { t, isRTL, language } = useLanguage();
-  const [searchParams] = useSearchParams();
-
-  // Utility function to navigate while preserving language parameter
-  const navigateWithLanguage = (url: string) => {
-    const currentLang = (searchParams.get("lang") || language).toLowerCase();
-    const urlObj = new URL(url, window.location.origin);
-
-    // Only add lang parameter if it's not already present
-    if (!urlObj.searchParams.has("lang")) {
-      urlObj.searchParams.set("lang", currentLang);
-    }
-
-    window.location.href = urlObj.toString();
-  };
   const { addToCart } = useCart();
   const { addToRecentlyViewed } = useRecentlyViewed();
-  const { addToComparison, isInComparison, maxComparisons, comparedProducts } = useComparison();
+  
+  const product = useMemo(() => getProductById(activeId || ""), [activeId]);
+
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [showStickyButton, setShowStickyButton] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
 
-  // Scroll to top on mount
+  // 🔄 FIXED RESET LOGIC: Uses a ref to ensure it only fires when the ID actually changes
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
-
-  // Track product view for recently viewed
-  useEffect(() => {
-    if (id && product) {
-      addToRecentlyViewed(id);
+    if (activeId && activeId !== lastProcessedId.current) {
+      console.log("🚀 Switching Product to:", activeId);
+      lastProcessedId.current = activeId;
+      setSelectedImage(0);
+      setQuantity(1);
+      
+      // We only scroll to top on the INITIAL load of a new product ID
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      
+      addToRecentlyViewed(activeId);
     }
-  }, [id, product, addToRecentlyViewed]);
+  }, [activeId, addToRecentlyViewed]); 
 
-  // Show sticky Add to Cart button on scroll
   useEffect(() => {
-    const handleScroll = () => {
-      // Show button after scrolling 400px down
-      if (window.scrollY > 400) {
-        setShowStickyButton(true);
-      } else {
-        setShowStickyButton(false);
-      }
-    };
-
+    const handleScroll = () => setShowStickyButton(window.scrollY > 400);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNextImage = () => {
-    if (product) {
-      setSelectedImage((prev) => (prev + 1) % product.images.length);
-    }
-  };
-
-  const handlePrevImage = () => {
-    if (product) {
-      setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length);
-    }
-  };
-
-  const handleAddToCart = () => {
-    if (!product) return;
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.priceDZD,
-        image: product.images[0],
-      });
-    }
-    const toastMsg = {
-      EN: "Added to cart!",
-      FR: "Ajouté au panier!",
-      AR: "تمت الإضافة إلى السلة!",
-    };
-    toast.success(toastMsg[language]);
-  };
-
   if (!product) {
     return (
-      <div className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
-        <Navbar />
-        <main className="pt-24 lg:pt-28 w-full px-4">
-          <div className="text-center py-20">
-            <h1 className="font-serif text-3xl text-primary mb-4">{t.productDetail.productNotFound}</h1>
-            <button onClick={() => navigateWithLanguage("/")} className="text-primary hover:underline cursor-pointer bg-transparent border-none p-0">
-              {t.productDetail.returnToCatalog}
-            </button>
-          </div>
-        </main>
-        <Footer />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-serif mb-4">Product Not Found</h1>
+          <Link to="/shop" className="text-primary underline">Back to Shop</Link>
+        </div>
       </div>
     );
   }
 
-  const seoTitle = `${product.name} | Instant Créatif Statio`;
-  const productDescription = t.products?.descriptions?.[product.id] || product.description;
-  const seoDescription = productDescription.substring(0, 155) + "...";
+  const handleAddToCart = () => {
+    for (let i = 0; i < quantity; i++) {
+      addToCart({ id: product.id, name: product.name, price: product.priceDZD, image: product.images[0] });
+    }
+    toast.success(language === "AR" ? "تمت الإضافة" : "Added to cart!");
+  };
 
   return (
-    <div className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
-      <SEO 
-        title={seoTitle}
-        description={seoDescription}
-        canonical={`/product/${product.id}`}
-        type="product"
-        image={Array.isArray(product.images) ? product.images[0] : product.image}
-        language={language}
-      />
-      {product && <StructuredData type="Product" data={product} />}
-      <Navbar />
+    <div key={activeId} className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
+      <SEO title={product.name} description={product.description} image={product.images[0]} />
+      
       <main className="pt-24 lg:pt-28">
-        <div className="w-full px-4 py-8 lg:py-12">
-          {/* Breadcrumb Navigation */}
-          <Breadcrumb 
-            items={[
-              { 
-                label: language === "AR" ? "المتجر" : language === "FR" ? "Boutique" : "Shop", 
-                href: "/shop" 
-              },
-              { 
-                label: product.category 
-              },
-              { 
-                label: product.name 
-              }
-            ]}
-            className="mb-6"
-          />
-
-          {/* Back Button */}
-          <div
-            onClick={() => navigateWithLanguage("/shop")}
-            className="inline-flex items-center text-primary hover:text-primary/80 mb-8 transition-colors cursor-pointer"
-          >
+        <div className="w-full px-4 py-8">
+          <Link to="/shop" className="inline-flex items-center text-primary mb-6">
             <ArrowLeft className={`h-4 w-4 ${isRTL ? "ml-2 rotate-180" : "mr-2"}`} />
             {t.productDetail.backToCatalog}
-          </div>
+          </Link>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
-            {/* Image Gallery */}
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Image Section */}
             <div className="space-y-4">
-              {/* Main Image */}
-              <div className="relative aspect-square overflow-hidden rounded-lg bg-muted group cursor-zoom-in"
-                onClick={() => setIsZoomOpen(true)}>
-                <img
-                  src={product.images[selectedImage]}
-                  alt={product.name}
-                  loading={selectedImage === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {/* Zoom Indicator */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur-sm rounded-full p-3">
-                    <ZoomIn className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-                {/* Wishlist Button */}
-                <WishlistButton
-                  productId={product.id}
-                  size="lg"
-                  className="absolute top-4 right-4"
-                />
-
+              <div className="aspect-square rounded-xl overflow-hidden bg-muted relative group cursor-zoom-in" onClick={() => setIsZoomOpen(true)}>
+                <img src={product.images[selectedImage]} alt={product.name} className="w-full h-full object-cover" />
+                <WishlistButton productId={product.id} className="absolute top-4 right-4" />
               </div>
-              
-              {/* Thumbnails */}
-              <div className="flex gap-3">
-                {product.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImage === index
-                        ? "border-primary"
-                        : "border-transparent hover:border-primary/50"
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${product.name} view ${index + 1}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover"
-                    />
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {product.images.map((img, idx) => (
+                  <button key={idx} onClick={() => setSelectedImage(idx)} className={`w-20 h-20 rounded-lg border-2 flex-shrink-0 ${selectedImage === idx ? "border-primary" : "border-transparent"}`}>
+                    <img src={img} className="w-full h-full object-cover rounded-md" />
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Product Info */}
+            {/* Content Section */}
             <div className="space-y-6">
-              <div>
-                <p className="text-sm uppercase tracking-wider text-muted-foreground mb-2">
-                  {product.category}
-                </p>
-                <div className="flex items-center gap-3 mb-4">
-                  <h1 className="font-serif text-3xl lg:text-4xl font-semibold text-primary">
-                    {product.name}
-                  </h1>
-                  <div className="flex gap-2">
-                    <SizeGuide
-                      productType={product.category.toLowerCase() as "notebook" | "planner" | "accessory"}
-                      dimensions={{
-                        width: product.category === "Planners" ? 21 : product.category === "Notebooks" ? 14.8 : 5,
-                        height: product.category === "Planners" ? 29.7 : product.category === "Notebooks" ? 21 : 8,
-                        thickness: product.category === "Planners" ? 2 : product.category === "Notebooks" ? 1.2 : 2
-                      }}
-                    />
-                    <ProductHelpModal product={product} />
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <PriceDisplay priceDZD={product.priceDZD} size="lg" className="text-2xl lg:text-3xl" />
-                  <ExchangeRateIndicator />
-                </div>
-
+              <h1 className="font-serif text-4xl font-semibold text-primary">{product.name}</h1>
+              <div className="flex items-center gap-4">
+                <PriceDisplay priceDZD={product.priceDZD} size="lg" />
+                <ExchangeRateIndicator />
               </div>
-
-              <div className="border-t border-border pt-6">
-                <p className="text-foreground leading-relaxed">
-                  {t.products?.descriptions?.[product.id] || product.description}
-                </p>
-              </div>
-
-              {/* Stock Availability */}
-              {product.stockStatus && (
-                <div className="bg-muted/30 rounded-lg p-4 border border-border">
-                  {product.stockStatus === "in-stock" && product.stock && product.stock <= 20 && (
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                        <span className="text-2xl">✓</span>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-emerald-700 dark:text-emerald-400">
-                          {language === "AR" ? "متوفر في المخزون" : language === "FR" ? "En stock" : "In Stock"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {language === "AR" ? "جاهز للشحن الفوري" : language === "FR" ? "Prêt à être expédié" : "Ready to ship"}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {product.stockStatus === "out-of-stock" && (
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                        <span className="text-2xl">✗</span>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-red-700 dark:text-red-400">
-                          {language === "AR" ? "نفذت الكمية" : language === "FR" ? "En rupture de stock" : "Out of Stock"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {language === "AR" ? "سنعلمك عند توفره" : language === "FR" ? "Sera bientôt de retour" : "Will be back soon"}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+              <p className="text-muted-foreground leading-relaxed text-lg">{product.description}</p>
+              
+              <div className="flex items-center gap-4 pt-4">
+                <div className="flex items-center border rounded-lg">
+                  <Button variant="ghost" onClick={() => setQuantity(Math.max(1, quantity - 1))}><Minus className="h-4 w-4" /></Button>
+                  <span className="w-10 text-center font-bold">{quantity}</span>
+                  <Button variant="ghost" onClick={() => setQuantity(quantity + 1)}><Plus className="h-4 w-4" /></Button>
                 </div>
-              )}
-
-              {/* Quantity Selector */}
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-sm font-medium text-foreground">
-                  {language === "AR" ? "الكمية" : language === "FR" ? "Quantité" : "Quantity"}:
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Add to Cart Button */}
-              <Button
-                onClick={handleAddToCart}
-                size="lg"
-                disabled={product.stockStatus === "out-of-stock"}
-                className="w-full text-lg py-6 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ShoppingCart className={`h-5 w-5 ${isRTL ? "ml-2" : "mr-2"}`} />
-                {product.stockStatus === "out-of-stock"
-                  ? (language === "AR" ? "نفذت الكمية" : language === "FR" ? "Épuisé" : "Out of Stock")
-                  : (language === "AR" ? "أضف إلى السلة" : language === "FR" ? "Ajouter au panier" : "Add to Cart")}
-              </Button>
-
-              {/* Shipping Terms Link */}
-              <div
-                onClick={() => navigateWithLanguage("/shipping-terms")}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors text-center block cursor-pointer"
-              >
-                {t.productDetail.shippingAll} →
-              </div>
-
-              {/* Features */}
-              <div className="border-t border-border pt-6 space-y-3">
-                <div className="flex items-center gap-3 text-foreground">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span>{t.productDetail.premiumQuality}</span>
-                </div>
-                <div className="flex items-center gap-3 text-foreground">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span>{t.productDetail.shippingAll}</span>
-                </div>
-                <div className="flex items-center gap-3 text-foreground">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span>{t.productDetail.securePackaging}</span>
-                </div>
+                <Button onClick={handleAddToCart} className="flex-1 py-6 text-lg" disabled={product.stockStatus === "out-of-stock"}>
+                  <ShoppingCart className="mr-2" />
+                  {product.stockStatus === "out-of-stock" ? "Out of Stock" : "Add to Cart"}
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Product Reviews Section */}
-        <div className="w-full px-4 py-8 lg:py-12 border-t border-border">
+        <RelatedProducts key={`related-${activeId}`} currentProduct={product} />
+        <div className="px-4 py-12 border-t">
           <ProductReviews productId={product.id} />
         </div>
-
-        {/* You May Also Like Section */}
-        <RelatedProducts currentProduct={product} />
-
-
       </main>
+
       <Footer />
       <FloatingButtons />
 
-      {/* Sticky Add to Cart Button */}
-      {product && showStickyButton && (
-        <div className={`fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border shadow-2xl transition-all duration-300 ${
-          showStickyButton ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-        }`}>
-          <div className="w-full px-4 py-4">
-            <div className="flex items-center justify-between gap-4 max-w-6xl mx-auto">
-              {/* Product Info */}
-              <div className="flex items-center gap-4 flex-1 min-w-0">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-14 h-14 rounded-lg object-cover flex-shrink-0 hidden sm:block"
-                />
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-serif text-sm font-medium text-primary truncate">
-                    {product.name}
-                  </h3>
-                  <PriceDisplay priceDZD={product.priceDZD} size="sm" />
-                </div>
-              </div>
-
-              {/* Add to Cart Button */}
-              <Button
-                onClick={handleAddToCart}
-                disabled={product.stockStatus === "out-of-stock"}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-5 text-base font-medium flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ShoppingCart className={`h-5 w-5 ${isRTL ? "ml-2" : "mr-2"}`} />
-                <span className="hidden sm:inline">
-                  {product.stockStatus === "out-of-stock"
-                    ? (language === "AR" ? "نفذت الكمية" : language === "FR" ? "Épuisé" : "Out of Stock")
-                    : (language === "AR" ? "أضف إلى السلة" : language === "FR" ? "Ajouter au panier" : "Add to Cart")}
-                </span>
-                <span className="sm:hidden">
-                  {product.stockStatus === "out-of-stock"
-                    ? (language === "AR" ? "نفذ" : language === "FR" ? "Épuisé" : "Out")
-                    : (language === "AR" ? "أضف" : language === "FR" ? "Ajouter" : "Add")}
-                </span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Image Zoom Dialog */}
       <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
-        <DialogContent className="!fixed !inset-0 !max-w-none !w-screen !h-screen !p-0 !bg-black !border-0 !translate-x-0 !translate-y-0 !left-0 !top-0">
-          {/* Close Button */}
-          <button
-            onClick={() => setIsZoomOpen(false)}
-            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
-            aria-label="Close"
-          >
-            <X className="h-6 w-6 text-white" />
-          </button>
-
-          {/* Navigation Buttons */}
-          {product.images.length > 1 && (
-            <>
-              <button
-                onClick={handlePrevImage}
-                className={`absolute ${isRTL ? "right-4" : "left-4"} top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors`}
-                aria-label="Previous image"
-              >
-                <ChevronLeft className={`h-8 w-8 text-white ${isRTL ? "rotate-180" : ""}`} />
-              </button>
-              <button
-                onClick={handleNextImage}
-                className={`absolute ${isRTL ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors`}
-                aria-label="Next image"
-              >
-                <ChevronRight className={`h-8 w-8 text-white ${isRTL ? "rotate-180" : ""}`} />
-              </button>
-            </>
-          )}
-
-          {/* Zoomed Image - Centered */}
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <img
-              src={product.images[selectedImage]}
-              alt={product.name}
-              className="max-w-full max-h-full object-contain"
-            />
+        <DialogContent className="max-w-none w-screen h-screen p-0 bg-black/90 border-0">
+          <div className="h-full flex items-center justify-center relative">
+            <button onClick={() => setIsZoomOpen(false)} className="absolute top-6 right-6 text-white hover:bg-white/10 p-2 rounded-full transition-colors">
+              <X size={32} />
+            </button>
+            <img src={product.images[selectedImage]} className="max-h-full max-w-full object-contain" alt="Zoomed product" />
           </div>
-
-          {/* Image Counter */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm z-50">
-            <span className="text-white text-sm font-medium">
-              {selectedImage + 1} / {product.images.length}
-            </span>
-          </div>
-
-          {/* Thumbnail Strip */}
-          {product.images.length > 1 && (
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-50">
-              <div className="flex gap-2 justify-center items-center flex-wrap">
-                {product.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                      selectedImage === index
-                        ? "border-white scale-110"
-                        : "border-white/30 hover:border-white/60"
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${product.name} thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </DialogContent>
       </Dialog>
     </div>

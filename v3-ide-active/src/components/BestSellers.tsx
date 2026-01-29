@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { products } from "@/data/products";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -7,18 +7,12 @@ import { Button } from "@/components/ui/button";
 const BestSellers = () => {
   const { t, isRTL, language } = useLanguage();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // Utility function to navigate while preserving language parameter
   const navigateWithLanguage = (url: string) => {
     const currentLang = (searchParams.get("lang") || language).toLowerCase();
-    const urlObj = new URL(url, window.location.origin);
-
-    // Only add lang parameter if it's not already present
-    if (!urlObj.searchParams.has("lang")) {
-      urlObj.searchParams.set("lang", currentLang);
-    }
-
-    window.location.href = urlObj.toString();
+    navigate(`${url}?lang=${currentLang}`);
   };
   
   // Only show first 4 products as "Best Sellers"
@@ -40,50 +34,42 @@ const BestSellers = () => {
         {/* Product Grid - 4 Best Sellers */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
           {bestSellers.map((product, index) => (
-            <div
+            <ProductCard
               key={product.id}
-              onClick={(e) => {
-                if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.product-card-content')) {
-                  navigateWithLanguage(`/product/${product.id}`);
-                }
-              }}
-              className="block cursor-pointer product-card-wrapper"
-              style={{ animationDelay: `${index * 0.05}s` }}
-            >
-              <ProductCard
-                id={product.id}
-                name={product.name}
-                priceDZD={product.priceDZD}
-                image={product.image}
-                category={product.category}
-                badge={product.badge}
-                showActionButtons={false}
-                showReviews={false}
-              />
-            </div>
+              id={product.id}
+              name={product.name}
+              priceDZD={product.priceDZD}
+              image={product.image}
+              category={product.category}
+              badge={product.badge}
+              showActionButtons={false}
+              showReviews={false}
+            />
           ))}
         </div>
 
         {/* View All Button */}
         <div className="text-center mt-12 lg:mt-16">
-          <button onClick={() => navigateWithLanguage("/shop")} className="w-full bg-transparent border-none p-0">
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg cursor-pointer">
-              {t.products.viewAll}
-              <svg
-                className={`w-4 h-4 ${isRTL ? "mr-2 rotate-180" : "ml-2"}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </Button>
-          </button>
+          <Button 
+            onClick={() => navigateWithLanguage("/shop")} 
+            variant="outline" 
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg"
+          >
+            {t.products.viewAll}
+            <svg
+              className={`w-4 h-4 ${isRTL ? "mr-2 rotate-180" : "ml-2"}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </Button>
         </div>
       </div>
     </section>

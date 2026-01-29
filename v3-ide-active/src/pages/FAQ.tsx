@@ -302,11 +302,19 @@ const FAQ = () => {
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 {contactDescription[language]}
               </p>
-              <Link to={`/contact?lang=${language.toLowerCase()}`} onClick={() => window.scrollTo(0, 0)}>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  {contactUsText[language]}
-                </Button>
-              </Link>
+              <Link 
+              to={`/contact?lang=${language.toLowerCase()}`} 
+              onClick={() => {
+                // Scroll to top using React approach
+                setTimeout(() => {
+                  window.scrollTo(0, 0);
+                }, 0);
+              }}
+            >
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                {contactUsText[language]}
+              </Button>
+            </Link>
             </div>
           </div>
         </div>

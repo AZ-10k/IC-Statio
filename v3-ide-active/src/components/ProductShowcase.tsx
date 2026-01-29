@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { ArrowUpDown } from "lucide-react";
 import ProductCard from "./ProductCard";
 import PriceRangeSlider from "./PriceRangeSlider";
 import { products } from "@/data/products";
 import { useLanguage, Language } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -42,19 +43,13 @@ const getSortLabels = (language: Language) => ({
 const ProductShowcase = () => {
   const { t, isRTL, language } = useLanguage();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const sortLabels = getSortLabels(language);
 
   // Utility function to navigate while preserving language parameter
   const navigateWithLanguage = (url: string) => {
     const currentLang = (searchParams.get("lang") || language).toLowerCase();
-    const urlObj = new URL(url, window.location.origin);
-
-    // Only add lang parameter if it's not already present
-    if (!urlObj.searchParams.has("lang")) {
-      urlObj.searchParams.set("lang", currentLang);
-    }
-
-    window.location.href = urlObj.toString();
+    navigate(`${url}?lang=${currentLang}`);
   };
   
   // Get min and max prices from products
@@ -201,13 +196,8 @@ const ProductShowcase = () => {
             </div>
           ) : (
             filteredProducts.map((product, index) => (
-              <div
-                key={product.id}
-                onClick={() => navigateWithLanguage(`/product/${product.id}`)}
-                className="block cursor-pointer"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
                 <ProductCard
+                  key={product.id}
                   id={product.id}
                   name={product.name}
                   priceDZD={product.priceDZD}
@@ -217,16 +207,16 @@ const ProductShowcase = () => {
                   showActionButtons={false}
                   showReviews={false}
                 />
-              </div>
             ))
           )}
         </div>
 
         {/* View All Button */}
         <div className="text-center mt-12 lg:mt-16">
-          <a
-            href="#"
-            className="inline-flex items-center text-primary font-medium hover:underline underline-offset-4 transition-all duration-200"
+          <Button
+            onClick={() => navigateWithLanguage("/shop")}
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg"
           >
             {t.products.viewAll}
             <svg
@@ -242,7 +232,7 @@ const ProductShowcase = () => {
                 d="M17 8l4 4m0 0l-4 4m4-4H3"
               />
             </svg>
-          </a>
+          </Button>
         </div>
       </div>
     </section>

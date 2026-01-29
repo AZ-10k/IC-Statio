@@ -512,13 +512,12 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const LANGUAGE_STORAGE_KEY = "statio-language";
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const [language, setLanguageState] = useState<Language>(() => {
-    // Try to get initial language from URL or localStorage
-    const urlLang = new URLSearchParams(window.location.search).get("lang");
-    if (urlLang && (urlLang.toUpperCase() === "EN" || urlLang.toUpperCase() === "FR" || urlLang.toUpperCase() === "AR")) {
-      return urlLang.toUpperCase() as Language;
+    // Try to get initial language from localStorage only (window.location breaks React Router)
+    const savedLang = localStorage.getItem("language");
+    if (savedLang && (savedLang.toUpperCase() === "EN" || savedLang.toUpperCase() === "FR" || savedLang.toUpperCase() === "AR")) {
+      return savedLang.toUpperCase() as Language;
     }
     
     try {
@@ -533,38 +532,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     return "EN";
   });
 
-  // Sync language state with URL parameter on every route change
-  useEffect(() => {
-    const urlLang = searchParams.get("lang");
-
-    // If URL has a valid language parameter, use it
-    if (urlLang && (urlLang.toUpperCase() === "EN" || urlLang.toUpperCase() === "FR" || urlLang.toUpperCase() === "AR")) {
-      const normalizedLang = urlLang.toUpperCase() as Language;
-      if (language !== normalizedLang) {
-        setLanguageState(normalizedLang);
-      }
-      return;
-    }
-
-    // If URL doesn't have lang parameter, add it from current state or localStorage
-    const currentLang = language || (() => {
-      try {
-        const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-        if (saved && (saved === "EN" || saved === "FR" || saved === "AR")) {
-          return saved as Language;
-        }
-      } catch (error) {
-        // Ignore
-      }
-      return "EN" as Language;
-    })();
-
-    // Add language to URL if missing
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set("lang", currentLang.toLowerCase());
-    setSearchParams(newSearchParams, { replace: true });
-  }, [searchParams, setSearchParams, language]);
-
+  
   // Persist to localStorage when language changes
   useEffect(() => {
     try {
@@ -578,11 +546,6 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-
-    // Always update URL with lang parameter (including for default language)
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set("lang", lang.toLowerCase());
-    setSearchParams(newSearchParams, { replace: true });
 
     // Dispatch custom event for RTLProvider to listen to
     window.dispatchEvent(new CustomEvent("languageUpdated", { detail: { language: lang } }));

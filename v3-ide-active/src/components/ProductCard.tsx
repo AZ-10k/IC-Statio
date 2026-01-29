@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { ShoppingBag, Eye, GitCompare, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,10 +38,16 @@ const ProductCard = ({ id, name, priceDZD, image, category, badge, stock, stockS
   const formatPrice = useFormattedPrice();
   const { addToComparison, isInComparison, maxComparisons, comparedProducts } = useComparison();
   const { subscribeToRestockAlert, subscribeToPriceAlert } = useNotifications();
+  const [searchParams] = useSearchParams();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+
+  const getProductUrl = (productId: string) => {
+    const currentLang = (searchParams.get("lang") || language).toLowerCase();
+    return `/product/${productId}?lang=${currentLang}`;
+  };
 
   const product = getProductById(id);
 
@@ -80,7 +87,11 @@ const ProductCard = ({ id, name, priceDZD, image, category, badge, stock, stockS
 
   return (
     <>
-      <div className="product-card-content group relative bg-card rounded-lg overflow-hidden shadow-card hover:shadow-hover transition-all duration-300">
+      <Link
+        to={getProductUrl(id)}
+        className="block"
+              >
+        <div className="product-card-content group relative bg-card rounded-lg overflow-hidden shadow-card hover:shadow-hover transition-all duration-300">
         <div className="relative aspect-square overflow-hidden bg-muted">
           {!imageLoaded && (
             <Skeleton className="absolute inset-0 w-full h-full" />
@@ -297,6 +308,7 @@ const ProductCard = ({ id, name, priceDZD, image, category, badge, stock, stockS
           )}
         </div>
       </div>
+      </Link>
 
       <ProductQuickView
         product={product || null}

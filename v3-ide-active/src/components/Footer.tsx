@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Instagram } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { INSTAGRAM_PROFILE_URL } from "@/constants/socialLinks";
@@ -35,18 +35,13 @@ const socialLinks = [
 const Footer = () => {
   const { t, isRTL, language } = useLanguage();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  // Utility function to navigate while preserving language parameter
+  // 🔨 THE FIX: Utility function using window.location.href to break the state freeze
   const navigateWithLanguage = (url: string) => {
     const currentLang = (searchParams.get("lang") || language).toLowerCase();
-    const urlObj = new URL(url, window.location.origin);
-
-    // Only add lang parameter if it's not already present
-    if (!urlObj.searchParams.has("lang")) {
-      urlObj.searchParams.set("lang", currentLang);
-    }
-
-    window.location.href = urlObj.toString();
+    // Use window.location.href to force a clean re-mount of the target page
+    window.location.href = `${url}?lang=${currentLang}`;
   };
 
   const followUsLabel = {
@@ -55,32 +50,30 @@ const Footer = () => {
     AR: "تابعنا",
   };
 
-  const scrollToTop = () => window.scrollTo(0, 0);
-
   const footerLinks = [
     {
       title: t.footer.catalog,
       links: [
-        { name: t.categories.planners, href: "/shop", isRoute: true },
-        { name: t.categories.notebooks, href: "/shop", isRoute: true },
-        { name: t.categories.giftTags, href: "/shop", isRoute: true },
-        { name: t.categories.accessories, href: "/shop", isRoute: true },
+        { name: t.categories.planners, href: "/shop" },
+        { name: t.categories.notebooks, href: "/shop" },
+        { name: t.categories.giftTags, href: "/shop" },
+        { name: t.categories.accessories, href: "/shop" },
       ],
     },
     {
       title: t.footer.company,
       links: [
-        { name: t.footer.ourStory, href: "/about", isRoute: true },
-        { name: t.nav.contact, href: "/contact", isRoute: true },
-        { name: t.footer.faqs, href: "/faq", isRoute: true },
-        { name: t.footer.shippingReturns, href: "/shipping-terms", isRoute: true },
+        { name: t.footer.ourStory, href: "/about" },
+        { name: t.nav.contact, href: "/contact" },
+        { name: t.footer.faqs, href: "/faq" },
+        { name: t.footer.shippingReturns, href: "/shipping-terms" },
       ],
     },
     {
       title: t.footer.legal,
       links: [
-        { name: t.footer.privacyPolicy, href: "/privacy", isRoute: true },
-        { name: t.footer.termsOfService, href: "/terms", isRoute: true },
+        { name: t.footer.privacyPolicy, href: "/privacy" },
+        { name: t.footer.termsOfService, href: "/terms" },
       ],
     },
   ];
@@ -123,7 +116,7 @@ const Footer = () => {
                 ))}
               </div>
             </div>
-            </div>
+          </div>
 
           {/* Link Columns */}
           {footerLinks.map((column) => (
@@ -148,7 +141,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-primary-foreground/10 mt-8">
           <div className="flex items-center gap-3">
             <p className="text-primary-foreground/50 text-sm">
               © {new Date().getFullYear()} Instant Créatif Statio. {t.footer.allRights}

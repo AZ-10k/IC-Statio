@@ -14,17 +14,23 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <HelmetProvider>
-        <BrowserRouter>
-          <RTLProvider>
-            <ThemeProvider>
-              <LanguageProvider>
-                <CurrencyProvider>
+        <RTLProvider>
+          <ThemeProvider>
+            <LanguageProvider>
+              <CurrencyProvider>
+                {/* STRATEGIC MOVE: We place BrowserRouter as the LAST provider.
+                  This ensures that when the URL changes, it is the direct 
+                  parent of the App, forcing an update regardless of whether 
+                  the Theme or Language providers are trying to "optimize" 
+                  and skip renders.
+                */}
+                <BrowserRouter>
                   <App />
-                </CurrencyProvider>
-              </LanguageProvider>
-            </ThemeProvider>
-          </RTLProvider>
-        </BrowserRouter>
+                </BrowserRouter>
+              </CurrencyProvider>
+            </LanguageProvider>
+          </ThemeProvider>
+        </RTLProvider>
       </HelmetProvider>
     </ErrorBoundary>
   </StrictMode>

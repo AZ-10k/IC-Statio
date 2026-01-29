@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { ArrowUpDown, ChevronLeft, ChevronRight, Search, X, SlidersHorizontal, Package } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -97,6 +97,7 @@ const getSEOLabels = (language: Language) => ({
 const Shop = () => {
   const { t, isRTL, language } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   const sortLabels = getSortLabels(language);
   const pageLabels = getPageLabels(language);
@@ -323,7 +324,10 @@ const Shop = () => {
     setIsLoading(true);
     setCurrentPage(page);
     updateUrlParams({ page });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Scroll to top using React approach
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 0);
     
     setTimeout(() => {
       setIsLoading(false);
@@ -537,7 +541,10 @@ const Shop = () => {
                     <Button
                       onClick={() => {
                         setSearchParams({});
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        // Scroll to top using React approach
+                        setTimeout(() => {
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 0);
                       }}
                       variant="outline"
                       className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
@@ -549,18 +556,8 @@ const Shop = () => {
                   paginatedProducts
                     .filter(product => !product.isBundle) // Exclude bundles from regular grid
                     .map((product, index) => (
-                    <div
-                      key={product.id}
-                      onClick={(e) => {
-                        if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.product-card-content')) {
-                          const currentLang = (searchParams.get("lang") || language).toLowerCase();
-                          window.location.href = `/product/${product.id}?lang=${currentLang}`;
-                        }
-                      }}
-                      className="block cursor-pointer product-card-wrapper"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
                         <ProductCard
+                          key={product.id}
                           id={product.id}
                           name={product.name}
                           priceDZD={product.priceDZD}
@@ -572,7 +569,6 @@ const Shop = () => {
                           showActionButtons={false}
                           showReviews={false}
                         />
-                    </div>
                     ))
                 )}
               </div>

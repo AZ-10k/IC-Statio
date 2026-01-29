@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { productData, Product } from "@/data/products";
 import { useFormattedPrice } from "@/contexts/CurrencyContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -17,9 +17,9 @@ const RelatedProducts = ({ currentProduct }: RelatedProductsProps) => {
   const { items: cartItems } = useCart();
   const [searchParams] = useSearchParams();
 
-  const navigateToProduct = (productId: string) => {
+  const getProductUrl = (productId: string) => {
     const currentLang = (searchParams.get("lang") || language).toLowerCase();
-    window.location.href = `/product/${productId}?lang=${currentLang}`;
+    return `/product/${productId}?lang=${currentLang}`;
   };
 
   // Enhanced recommendation algorithm
@@ -91,11 +91,11 @@ const RelatedProducts = ({ currentProduct }: RelatedProductsProps) => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
           {relatedProducts.map((product) => (
-            <div
+            <Link
               key={product.id}
-              onClick={() => navigateToProduct(product.id)}
+              to={getProductUrl(product.id)}
               className="group block cursor-pointer"
-            >
+                          >
               <div className="relative overflow-hidden rounded-lg bg-muted aspect-square mb-3">
                 <img
                   src={product.image}
@@ -116,7 +116,7 @@ const RelatedProducts = ({ currentProduct }: RelatedProductsProps) => {
               <p className="text-sm font-semibold text-primary mt-1">
                 {formatPrice(product.priceDZD)}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

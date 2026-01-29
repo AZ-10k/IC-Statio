@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,9 +7,14 @@ import { useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
 import PriceDisplay from "./PriceDisplay";
 
 const RecentlyViewed = () => {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
   const { viewedProducts, removeFromRecentlyViewed } = useRecentlyViewed();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const getProductUrl = (productId: string) => {
+    const currentLang = (searchParams.get("lang") || language).toLowerCase();
+    return `/product/${productId}?lang=${currentLang}`;
+  };
 
   if (viewedProducts.length === 0) return null;
 
@@ -25,40 +30,42 @@ const RecentlyViewed = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {viewedProducts.map((product) => (
-            <Card
+            <Link
               key={product.id}
-              className="group cursor-pointer hover:shadow-lg transition-all duration-300"
-              onClick={() => navigate(`/product/${product.id}`)}
+              to={getProductUrl(product.id)}
+              className="block"
             >
-              <CardContent className="p-4">
-                <div className="relative mb-3">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-32 object-cover rounded-md group-hover:scale-105 transition-transform duration-300"
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300">
+                <CardContent className="p-4">
+                  <div className="relative mb-3">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-32 object-cover rounded-md group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeFromRecentlyViewed(product.id);
+                      }}
+                      className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2">
+                    {product.name}
+                  </h3>
+
+                  <PriceDisplay
+                    priceDZD={product.priceDZD}
+                    className="text-primary font-semibold text-sm"
                   />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFromRecentlyViewed(product.id);
-                    }}
-                    className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-
-                <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2">
-                  {product.name}
-                </h3>
-
-                <PriceDisplay
-                  priceDZD={product.priceDZD}
-                  className="text-primary font-semibold text-sm"
-                />
-
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>

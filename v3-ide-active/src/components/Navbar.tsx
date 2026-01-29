@@ -3,21 +3,16 @@ import { Link, useNavigate, useLocation, useSearchParams } from "react-router-do
 import { Menu, X, Search, Heart, ShoppingBag, Sparkles, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoStatio from "@/assets/logo-statio.jpg";
-import { useCurrency } from "@/contexts/CurrencyContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import PreferencesMenu from "./PreferencesMenu";
 import SearchBar from "./SearchBar";
 import WishlistDrawer from "./WishlistDrawer";
 import CartDrawer from "./CartDrawer";
-import ThemeToggle from "./ThemeToggle";
-
-const currencies: Array<"DZD" | "EUR" | "USD"> = ["DZD", "EUR", "USD"];
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { currency, setCurrency } = useCurrency();
-  const { t, isRTL, language, setLanguage } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -31,17 +26,22 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Utility function to navigate while preserving language parameter
+  // Listen for mobile menu close event from PreferencesMenu
+  useEffect(() => {
+    const handleCloseMobileMenu = () => {
+      setIsMenuOpen(false);
+    };
+    window.addEventListener('closeMobileMenu', handleCloseMobileMenu);
+    return () => window.removeEventListener('closeMobileMenu', handleCloseMobileMenu);
+  }, []);
+
+  // 🔨 THE FIX: Utility function to navigate using Hard Refresh to prevent freezing
   const navigateWithLanguage = (url: string) => {
     const currentLang = (searchParams.get("lang") || language).toLowerCase();
-    const urlObj = new URL(url, window.location.origin);
-
-    // Only add lang parameter if it's not already present
-    if (!urlObj.searchParams.has("lang")) {
-      urlObj.searchParams.set("lang", currentLang);
-    }
-
-    window.location.href = urlObj.toString();
+    const targetPath = `${url}${url.includes('?') ? '&' : '?'}lang=${currentLang}`;
+    
+    // Using window.location.href forces the app to re-mount and prevents the "state freeze"
+    window.location.href = targetPath;
   };
 
   const handleHomeClick = () => {
@@ -50,15 +50,13 @@ const Navbar = () => {
 
   const handleNavClick = (href: string) => {
     if (href.startsWith("/#")) {
-      // Scroll to section on home page
+      // Scroll to section logic
       const sectionId = href.substring(2);
       const currentLang = (searchParams.get("lang") || language).toLowerCase();
-      // If we're not on the home page, navigate there first
+      
       if (location.pathname !== "/") {
-        navigate(`/?lang=${currentLang}`);
-        setTimeout(() => {
-          document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
+        // Force navigate to home if not there
+        window.location.href = `/?lang=${currentLang}#${sectionId}`;
       } else {
         document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
       }
@@ -101,12 +99,12 @@ const Navbar = () => {
                 className="relative h-10 w-auto max-h-10 object-contain rounded-full sm:h-16 sm:w-16 sm:max-h-16 ring-2 ring-wine/10 group-hover:ring-wine/30 transition-all duration-300 group-hover:scale-105"
               />
             </div>
-            <div className="hidden sm:block flex items-center gap-3">
+            <div className="hidden sm:flex flex-col items-start gap-0">
               <span className="font-serif text-lg font-semibold bg-gradient-to-r from-wine to-wine/70 bg-clip-text text-transparent leading-none group-hover:from-wine group-hover:to-wine transition-all duration-300">
                 Instant Créatif Statio
               </span>
               <div className="text-xs text-muted-foreground font-medium mt-1">
-                {language === "AR" ? "متجمل للمنتجات الورقية الفاخرة" : language === "FR" ? "Boutique de produits papier premium" : "Premium Paper Goods Boutique"}
+                {language === "AR" ? "متجر للمنتجات الورقية الفاخرة" : language === "FR" ? "Boutique de produits papier premium" : "Premium Paper Goods Boutique"}
               </div>
             </div>
           </button>
@@ -118,7 +116,7 @@ const Navbar = () => {
               return (
                 <button
                   key={link.name}
-                  onClick={() => navigateWithLanguage(link.href)}
+                  onClick={() => handleNavClick(link.href)}
                   className="group relative px-6 py-3 text-sm font-medium text-foreground transition-all duration-300 cursor-pointer rounded-xl hover:bg-gradient-to-r hover:from-wine/10 hover:to-blush/10 hover:shadow-lg hover:shadow-wine/10 hover:scale-105 bg-transparent border-none p-0"
                   aria-label={link.name}
                   style={{ animationDelay: `${index * 100}ms` }}
@@ -127,7 +125,7 @@ const Navbar = () => {
                     <Icon className="h-4 w-4 text-wine/60 group-hover:text-wine transition-colors duration-300" />
                     <span className="relative z-10 group-hover:text-wine transition-colors duration-300">{link.name}</span>
                   </div>
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 h-0.5 w-0 bg-gradient-to-r from-wine via-wine/80 to-wine transition-all duration-300 group-hover:w-8 rounded-full" />
+                  <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 h-0.5 w-0 bg-gradient-to-r from-wine via-wine/80 to-wine transition-all duration-300 group-hover:w-8 rounded-full ${location.pathname === link.href ? "w-8" : "w-0"}`} />
                 </button>
               );
             })}
@@ -157,8 +155,6 @@ const Navbar = () => {
               {/* Cart */}
               <CartDrawer />
               
-              {/* Desktop: Language and Theme removed - now in TopBar */}
-              
               {/* Mobile Menu Toggle */}
               <Button 
                 variant="ghost" 
@@ -182,8 +178,8 @@ const Navbar = () => {
                   return (
                     <button
                       key={link.name}
-                      onClick={() => navigateWithLanguage(link.href)}
-                      className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-wine py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-wine/10 hover:to-blush/5 cursor-pointer transition-all duration-300 hover:scale-105 bg-transparent border-none p-0 w-full text-left"
+                      onClick={() => handleNavClick(link.href)}
+                      className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-wine py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-wine/10 hover:to-blush/5 cursor-pointer transition-all duration-300 hover:scale-105 bg-transparent border-none w-full text-left"
                       style={{ animationDelay: `${index * 50}ms` }}
                       aria-label={link.name}
                     >
@@ -192,52 +188,9 @@ const Navbar = () => {
                     </button>
                   );
                 })}
-                
-                {/* Mobile: Language selection */}
-                <div className="py-4 border-t border-border/50">
-                  <span className="text-xs text-muted-foreground mb-3 block font-medium">
-                    {language === "AR" ? "اللغة" : language === "FR" ? "Langue" : "Language"}
-                  </span>
-                  <div className="flex gap-2">
-                    {(["EN", "FR", "AR"] as const).map((lang) => (
-                      <button
-                        key={lang}
-                        onClick={() => setLanguage(lang)}
-                        className={`text-sm px-3 py-2 rounded-xl cursor-pointer flex items-center gap-2 transition-all duration-300 hover:scale-105 ${
-                          language === lang
-                            ? "bg-gradient-to-r from-wine to-wine/80 text-primary-foreground shadow-lg shadow-wine/25"
-                            : "text-foreground hover:text-wine border border-border/50 hover:border-wine/30 hover:bg-blush/10"
-                        }`}
-                      >
-                        <img 
-                          src={lang === "AR" ? "/assets/flags/dz.svg" : lang === "FR" ? "/assets/flags/fr.svg" : "/assets/flags/gb.svg"} 
-                          alt={lang} 
-                          className="w-5 h-4 object-cover rounded-sm" 
-                        /> 
-                        <span className="font-medium">{lang}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Mobile: Currency selection */}
-                <div className="py-4 border-t border-border/50">
-                  <span className="text-xs text-muted-foreground mb-3 block font-medium">{t.currency}</span>
-                  <div className="flex gap-2">
-                    {currencies.map((curr) => (
-                      <button
-                        key={curr}
-                        onClick={() => setCurrency(curr)}
-                        className={`text-sm px-3 py-2 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 ${
-                          currency === curr
-                            ? "bg-gradient-to-r from-wine to-wine/80 text-primary-foreground shadow-lg shadow-wine/25"
-                            : "text-foreground hover:text-wine border border-border/50 hover:border-wine/30 hover:bg-blush/10"
-                        }`}
-                      >
-                        <span className="font-medium">{curr}</span>
-                      </button>
-                    ))}
-                  </div>
+                {/* Language/Currency Switcher for Mobile */}
+                <div className="pt-4 border-t border-border/50 flex justify-center">
+                  <PreferencesMenu />
                 </div>
               </div>
             </div>

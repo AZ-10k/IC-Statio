@@ -30,6 +30,7 @@ class ErrorBoundaryClass extends Component<Props, State> {
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
+    // CRITICAL: window.location.reload is acceptable for error recovery only
     window.location.reload();
   };
 
