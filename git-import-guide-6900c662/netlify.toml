@@ -1,0 +1,13 @@
+[build]
+  # This tells Netlify where your built files are
+  publish = "dist"
+  # This is the command that creates the 'dist' folder
+  command = "npm run build"
+
+[[redirects]]
+  # This is the MAGIC line for React/Vite SPAs.
+  # It tells Netlify: "If you don't find a file, don't show 404. 
+  # Send the user to index.html so the AI/React code can handle it."
+  from = "/*"
+  to = "/index.html"
+  status = 200
